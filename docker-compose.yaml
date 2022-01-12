@@ -1,0 +1,15 @@
+version: "3.9"
+   
+services:
+  db:
+    image: cgerull/mariadb
+    volumes:
+      - ./data/db:/var/lib/mysql
+  web:
+    image: cgerull/testserver:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SECRET_KEY=DockerComposeSecret
+    depends_on:
+      - db
