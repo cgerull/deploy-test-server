@@ -15,5 +15,5 @@ argocd proj create testsuite --description "Suite of test services." -d https://
 
 InstallArgoCD app
 ```bash
-argocd app create testserver --repo  https://github.com/cgerull/deploy-test-server--path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace testserver`--project testsuite
+argocd app create testserver --repo  https://github.com/cgerull/deploy-test-server --path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace testserver --project testsuite
 ```
