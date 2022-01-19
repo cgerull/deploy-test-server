@@ -12,7 +12,7 @@ Then you generate the kubernetes manifest with:
 # Create one manifest file with all objects.
 helm template testerver helm/testserver > kubernetes/testserver.yaml
 # Create one manifest per object
-helm template testserver helm/server  --include-crds --output-dir kubernetes/testserver/
+helm template testserver helm/server  --include-crds --output-dir kubernetes/
 ```
 
 Start the application with
