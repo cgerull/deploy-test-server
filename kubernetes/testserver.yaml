@@ -71,7 +71,8 @@ spec:
               containerPort: 8080
               protocol: TCP
           env:
-            - SECRET_KEY=HelmChartSecret
+            - name: SECRET_KEY
+              value: HelmChartSecret
           livenessProbe:
             httpGet:
               path: /

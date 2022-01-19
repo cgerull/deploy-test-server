@@ -64,7 +64,8 @@ ingress:
   #      - chart-example.local
 
 env:
-  - "SECRET_KEY=HelmChartSecret"
+  - name: SECRET_KEY
+    value: HelmChartSecret
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
