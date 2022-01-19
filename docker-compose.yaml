@@ -2,7 +2,11 @@ version: "3.9"
    
 services:
   db:
-    image: cgerull/mariadb
+    image: mariadb:10.7-focal
+    environment:
+      - MARIADB_ROOT_PASSWORD=P@ssW0rd
+      - MARIADB_USER=testserver
+      - MARIADB_PASSWORD=my_cool_secret
     volumes:
       - ./data/db:/var/lib/mysql
   web:
