@@ -1,24 +1,24 @@
 ---
-# Source: test-server/templates/serviceaccount.yaml
+# Source: server/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: testserver-test-server
+  name: testserver
   labels:
-    helm.sh/chart: test-server-0.1.0
-    app.kubernetes.io/name: test-server
+    helm.sh/chart: server-0.1.0
+    app.kubernetes.io/name: server
     app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "latest"
     app.kubernetes.io/managed-by: Helm
 ---
-# Source: test-server/templates/service.yaml
+# Source: server/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: testserver-test-server
+  name: testserver
   labels:
-    helm.sh/chart: test-server-0.1.0
-    app.kubernetes.io/name: test-server
+    helm.sh/chart: server-0.1.0
+    app.kubernetes.io/name: server
     app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "latest"
     app.kubernetes.io/managed-by: Helm
@@ -26,21 +26,21 @@ spec:
   type: ClusterIP
   ports:
     - port: 80
-      targetPort: http
+      targetPort: 8080
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: test-server
+    app.kubernetes.io/name: server
     app.kubernetes.io/instance: testserver
 ---
-# Source: test-server/templates/deployment.yaml
+# Source: server/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: testserver-test-server
+  name: testserver
   labels:
-    helm.sh/chart: test-server-0.1.0
-    app.kubernetes.io/name: test-server
+    helm.sh/chart: server-0.1.0
+    app.kubernetes.io/name: server
     app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "latest"
     app.kubernetes.io/managed-by: Helm
@@ -48,21 +48,22 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: test-server
+      app.kubernetes.io/name: server
       app.kubernetes.io/instance: testserver
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: test-server
+        app.kubernetes.io/name: server
         app.kubernetes.io/instance: testserver
     spec:
-      serviceAccountName: testserver-test-server
+      serviceAccountName: testserver
       securityContext:
         {}
       containers:
-        - name: test-server
+        - name: server
           securityContext:
-            {}
+            runAsNonRoot: true
+            runAsUser: 1000
           image: "cgerull/testserver:latest"
           imagePullPolicy: IfNotPresent
           ports:
@@ -78,40 +79,46 @@ spec:
               path: /
               port: http
           resources:
-            {}
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
 ---
-# Source: test-server/templates/ingress.yaml
-apiVersion: networking.k8s.io/v1beta1
+# Source: server/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: testserver-test-server
+  name: testserver
   labels:
-    helm.sh/chart: test-server-0.1.0
-    app.kubernetes.io/name: test-server
+    helm.sh/chart: server-0.1.0
+    app.kubernetes.io/name: server
     app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "latest"
     app.kubernetes.io/managed-by: Helm
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/rewrite-target: /$2
 spec:
+  ingressClassName: traefik
   rules:
-    - host: "ubuntu.gerull.nl"
+    - host: "localhost"
       http:
         paths:
-          - path: /testsrv/
+          - path: /test
+            pathType: ImplementationSpecific
             backend:
-              serviceName: testserver-test-server
-              servicePort: 80
+              service:
+                name: testserver
+                port:
+                  number: 80
 ---
-# Source: test-server/templates/tests/test-connection.yaml
+# Source: server/templates/tests/test-connection.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "testserver-test-server-test-connection"
+  name: "testserver-test-connection"
   labels:
-    helm.sh/chart: test-server-0.1.0
-    app.kubernetes.io/name: test-server
+    helm.sh/chart: server-0.1.0
+    app.kubernetes.io/name: server
     app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "latest"
     app.kubernetes.io/managed-by: Helm
@@ -122,5 +129,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['testserver-test-server:80']
+      args: ['testserver:80']
   restartPolicy: Never
