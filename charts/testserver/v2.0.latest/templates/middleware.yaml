@@ -1,0 +1,14 @@
+{{- if .Values.ingress.enabled }}
+# Strip prefix from ingress configuration
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: test-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      {{- range .Values.ingress.hosts.host.paths.path}}
+      - {{ .path }}
+      {{- end }}
+      - /metrics
+{{- end }}
