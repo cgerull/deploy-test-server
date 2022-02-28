@@ -12,7 +12,7 @@ Then you generate the kubernetes manifest with:
 # Create one manifest file with all objects.
 helm template testerver helm/testserver > kubernetes/testserver.yaml
 # Create one manifest per object
-helm template testserver helm/server  --include-crds --output-dir kubernetes/
+helm template testserver helm/testserver  --include-crds --output-dir kubernetes/
 ```
 
 Start the application with
@@ -21,7 +21,7 @@ Start the application with
 helm install testerver helm/testserver --dry-run && \
 helm install testerver helm/testserver
 # Direct via kubectl
-kubectl apply -f kubernetes/testserver.yaml --dry-run=server && \
+kubectl apply -f kubernetes/testserver.yaml --dry-run=testserver && \
 kubectl apply -f kubernetes/testserver.yaml
 ```
 
