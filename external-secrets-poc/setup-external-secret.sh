@@ -37,8 +37,8 @@ vault write auth/kubernetes/config \
     disable_issuer_verification=true
 
     # Create vault role
-sa_secret_name="$(kubectl get serviceaccount external-secrets -n es -o json | jq '.secrets[0].name' | tr -d '"')"
-sa_account_token="$(kubectl get secret ${sa_secret_name} -n es -o json | jq '.data.token' | tr -d '"' | base64 -d)" 
+sa_secret_name="$(kubectl get serviceaccount external-secrets -n external-secrets -o json | jq '.secrets[0].name' | tr -d '"')"
+sa_account_token="$(kubectl get secret ${sa_secret_name} -n external-secrets -o json | jq '.data.token' | tr -d '"' | base64 -d)" 
 
 vault write auth/kubernetes/role/${PRIFIX}-role \
     bound_service_account_names=external-secrets \

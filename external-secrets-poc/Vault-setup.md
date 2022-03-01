@@ -45,13 +45,6 @@ path "kv/data/path/to/my/secret"
 {  capabilities = ["read"]                
 }                         
 EOF
-#
-vault policy write cgerull-policy -<<EOF     
-path "kv/local/cgerull/secret"                                                  
-{  capabilities = ["read"]                
-}                         
-EOF
-#
 
 ## Enable and setup kubernetes authentication
 vault auth enable kubernetes
@@ -69,17 +62,12 @@ vault write auth/kubernetes/config \
     disable_issuer_verification=true
 
 # Create vault role
-demo_secret_name="$(kubectl get serviceaccount external-secrets -n es -o jsonpath='{secrets[0].name}')"
-demo_account_token="$(kubectl get secret ${demo_secret_name} -n es -o jsonpath='{.data.token}' | base64 --decode)"                  
-
-#
-cgerull_secret_name="$(kubectl get serviceaccount external-secrets -n external-secrets -o json | jq '.secrets[0].name' | tr -d '"')"
-cgerull_account_token="$(kubectl get secret ${cgerull_secret_name} -n external-secrets -o json | jq '.data.token' | tr -d '"' | base64 -d)"
-#
+demo_secret_name="$(kubectl get serviceaccount external-secrets -n external-secrets -o json | jq '.secrets[0].name' | tr -d '"')"
+demo_account_token="$(kubectl get secret ${demo_secret_name} -n external-secrets -o json | jq '.data.token' | tr -d '"' | base64 -d)"                  
 
 vault write auth/kubernetes/role/demo-role \
     bound_service_account_names=external-secrets \
-    bound_service_account_namespaces=es \
+    bound_service_account_namespaces=external-secrets \
     policies=demo-policy \
     ttl=24h
 
@@ -126,4 +114,3 @@ data:
     key: path/to/my/secret
     property: password
 ```
-
