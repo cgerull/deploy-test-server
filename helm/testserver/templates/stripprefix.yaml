@@ -1,6 +1,6 @@
 {{- if .Values.ingress.className }}
 {{- if eq .Values.ingress.className "traefik" }}
-apiVersion: v1
+apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: {{ include "testserver.name" . }}-stripprefix
