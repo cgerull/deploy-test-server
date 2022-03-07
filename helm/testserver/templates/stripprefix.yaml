@@ -1,27 +1,17 @@
 {{- if .Values.ingress.className }}
 {{- if eq .Values.ingress.className "traefik" }}
 apiVersion: v1
-items:
-- apiVersion: traefik.containo.us/v1alpha1
-  kind: Middleware
-  metadata:
-    name: {{ include "testserver.name" . }}-stripprefix
-    
-    {{- /*}}
-    # namespace: {{ .Values.namespace }}
-    {{- */}}
-  spec:
-    stripPrefix:
-      forceSlash: false
-      prefixes:
-      {{- range .Values.ingress.hosts }}
-        {{- range .paths }}
-        - {{ .path }}
-        {{- end }}
-      {{- end }}
-kind: List
+kind: Middleware
 metadata:
-  resourceVersion: ""
-  selfLink: ""
+  name: {{ include "testserver.name" . }}-stripprefix
+spec:
+  stripPrefix:
+    forceSlash: false
+    prefixes:
+    {{- range .Values.ingress.hosts }}
+      {{- range .paths }}
+        - "{{ .path }}"
+      {{- end }}
+    {{- end }}
 {{- end }}
 {{- end }}
