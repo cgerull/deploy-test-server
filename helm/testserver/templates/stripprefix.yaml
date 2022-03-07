@@ -14,9 +14,9 @@ items:
     stripPrefix:
       forceSlash: false
       prefixes:
-      {{ range .Values.ingress.hosts }}
-        {{ range .paths }}
-        - .path
+      {{- range .Values.ingress.hosts }}
+        {{- range .paths }}
+        - {{ .path }}
         {{- end }}
       {{- end }}
 kind: List
