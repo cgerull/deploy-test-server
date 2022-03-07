@@ -1,0 +1,6 @@
+# Dev configuaration
+replicaCount: 2
+
+env:
+  - name: SECRET_KEY
+    value: DevHelmChartSecret
