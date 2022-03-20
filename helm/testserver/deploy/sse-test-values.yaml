@@ -3,8 +3,8 @@
 image:
   tag: 0.9.3
   
-replicaCount: 2
+replicaCount: 1
 
 env:
   - name: SECRET_KEY
-    value: DevHelmChartSecret
+    value: SseTestHelmChartSecret
