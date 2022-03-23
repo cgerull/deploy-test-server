@@ -1,0 +1,34 @@
+# Default values for mysql.
+
+mysql:
+  enabled: true
+  auth:
+    # -- Specify the secret to use for database credentials
+    existingSecret: mysql
+
+  # -- List of AWS Secret Manager secerts to load
+  secretManagerSecrets: []
+  # - name: mysql
+  #   roleArn: arn:aws:iam::123456789012:role/SecretReaderRole
+  #   data:
+  #     - key: "arn:aws:secretsmanager:eu-west-1:123456789012:secret:secretNameHere"
+  #       name: "someSecretKey"
+  #     - key: "arn:aws:secretsmanager:eu-west-1:123456789012:secret:secretNameHere"
+  #       name: "customSecretKey"
+  #       property: "otherSecretKey"
+  
+  image:
+    tag: 5.7.35-debian-10-r33
+
+  networkPolicy:
+    create: true
+
+    # -- Add additional Cilium CNP statements.
+    cilium:
+      ingress: {}
+
+tunneller:
+  enabled: false
+
+  networkPolicy:
+    create: true

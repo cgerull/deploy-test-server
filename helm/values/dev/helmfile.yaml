@@ -1,0 +1,18 @@
+---
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+  - name: isotoma
+    url: https://isotoma.github.io/charts
+
+releases:
+  - name: testserver
+    chart: ../../charts/testserver
+    values:
+      - testserver.yaml
+
+  - name: mysql
+    chart: ../../charts/mysql
+    values:
+      - mysql.yaml
