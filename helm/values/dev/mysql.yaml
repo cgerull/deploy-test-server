@@ -1,0 +1,16 @@
+## Dev values for mysql
+
+global:
+  environment: dev
+
+mysql:
+  secretManagerSecrets:
+    - name: mysql
+      roleArn: arn:aws:iam:
+      data:
+        - key: "arn:aws:secretsmanager:/mysql"
+          name: "mysql-root-password"
+          property: "root-password"
+
+tunnel:
+  enabled: false
