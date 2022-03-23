@@ -1,5 +1,9 @@
 # Dev configuaration
-replicaCount: 1
+#
+image:
+  tag: 0.9.3
+  
+replicaCount: 2
 
 env:
   - name: SECRET_KEY
