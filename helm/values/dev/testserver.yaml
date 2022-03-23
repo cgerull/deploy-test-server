@@ -1,0 +1,23 @@
+# Dev configuaration
+replicaCount: 1
+
+env:
+  - name: SECRET_KEY
+    value: DevHelmChartSecret
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: dev-testserver-testserver-stripprefix@kubernetescrd
+  hosts:
+    - host: localhost
+      paths:
+        - path: /test
+          pathType: Prefix
+          backend:
+            service:
+              name: testserver
+              port:
+                number: 80

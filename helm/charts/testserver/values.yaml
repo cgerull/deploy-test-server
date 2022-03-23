@@ -1,4 +1,4 @@
-# Default values for server.
+# Default values for testserver.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -47,22 +47,19 @@ port:
 
 
 ingress:
-  enabled: true
-  className: "traefik"
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.middlewares: test-stripprefix
-    # traefik.ingress.kubernetes.io/rewrite-target: /$2
-    # ingress.kubernetes.io/ssl-redirect: "false"
+  enabled: false
+  className: ""
+  annotations: []
   hosts:
     - host: localhost
       paths:
         - path: /test
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+          pathType: Prefix
+          backend:
+            service:
+              name: testserver
+              port:
+                number: 80
 
 env:
   - name: SECRET_KEY
@@ -93,5 +90,4 @@ tolerations: []
 
 affinity: {}
 
-testing:
-  enabled: false
+testEnabled: false

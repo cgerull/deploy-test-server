@@ -1,0 +1,41 @@
+---
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.4.0
+
+      - name: Add TPE repo
+        run: |
+          helm repo add tpe https://${GITHUB_TOKEN}@raw.githubusercontent.com/ccv-group/tpe/gh-pages/
+        env:
+          GITHUB_TOKEN: "${{ secrets.REPO_TOKEN }}"
+
+      - name: Run chart-releaser
+        uses: stecky/yet-another-chart-releaser-action@main
+        with:
+          charts_dir: helm/charts
+          charts_repo_url: https://raw.githubusercontent.com/ccv-group/tpe/gh-pages/
+          packages_with_index: true
+        env:
+          YACR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
