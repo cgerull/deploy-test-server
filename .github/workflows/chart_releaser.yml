@@ -25,9 +25,9 @@ jobs:
         with:
           version: v3.4.0
 
-      - name: Add TPE repo
+      - name: Add cgerull repo
         run: |
-          helm repo add tpe https://${GITHUB_TOKEN}@raw.githubusercontent.com/ccv-group/tpe/gh-pages/
+          helm repo add tpe https://${GITHUB_TOKEN}@raw.githubusercontent.com/cgerull/charts/gh-pages/
         env:
           GITHUB_TOKEN: "${{ secrets.REPO_TOKEN }}"
 
@@ -35,7 +35,7 @@ jobs:
         uses: stecky/yet-another-chart-releaser-action@main
         with:
           charts_dir: helm/charts
-          charts_repo_url: https://raw.githubusercontent.com/ccv-group/tpe/gh-pages/
+          charts_repo_url: https://raw.githubusercontent.com/cgerull/charts/gh-pages/
           packages_with_index: true
         env:
           YACR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
