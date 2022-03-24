@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: testsuite
+  namespace: dev-environment
+spec:
+  description: This Project contains configuration for the Dev environment.
+  destinations:
+  - namespace: testsuite
+    server: https://k3d-dev.local
+  orphanedResources:
+    warn: true
+  sourceRepos:
+  - https://github.com/cgerull/deploy-test-server
