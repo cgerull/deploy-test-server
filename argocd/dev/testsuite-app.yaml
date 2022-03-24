@@ -8,7 +8,7 @@ metadata:
 spec:
   destination:
     namespace: testsuite
-    server: https://k3d-dev.local
+    server: https://kubernetes.default.svc
   ignoreDifferences:
   - group: apps
     jsonPointers:
