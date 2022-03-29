@@ -1,0 +1,7 @@
+# Acc configuaration
+replicaCount: 1
+
+env:
+  - name: SECRET_KEY
+    value: TestAccHelmChartSecret
+
