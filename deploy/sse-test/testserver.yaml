@@ -8,6 +8,8 @@ replicaCount: 2
 env:
   - name: SECRET_KEY
     value: SseTestHelmChartSecret
+  - name: ENV
+    value: 'PE SSE Test'
 
 ingress:
   enabled: false
