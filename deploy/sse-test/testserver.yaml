@@ -3,13 +3,13 @@
 image:
   tag: 0.9.3
   
-replicaCount: 2
+replicaCount: 1
 
 env:
   - name: SECRET_KEY
     value: SseTestHelmChartSecret
-  - name: ENV
-    value: 'PE SSE Test'
+  - name: FLASK_ENV
+    value: 'Test'
 
 ingress:
   enabled: false

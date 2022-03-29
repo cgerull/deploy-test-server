@@ -45,7 +45,7 @@ metadata:
     app.kubernetes.io/version: "0.9.1"
     app.kubernetes.io/managed-by: Helm
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: testserver
@@ -73,8 +73,8 @@ spec:
           env:
             - name: SECRET_KEY
               value: SseTestHelmChartSecret
-            - name: ENV
-              value: PE SSE Test
+            - name: FLASK_ENV
+              value: Test
           livenessProbe:
             httpGet:
               path: /health
