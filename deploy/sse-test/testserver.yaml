@@ -1,0 +1,13 @@
+# Dev configuaration
+#
+image:
+  tag: 0.9.3
+  
+replicaCount: 2
+
+env:
+  - name: SECRET_KEY
+    value: SseTestHelmChartSecret
+
+ingress:
+  enabled: false
