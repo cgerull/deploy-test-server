@@ -1,0 +1,23 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+default:
+  tags:
+    - sse-docker
+
+stages:
+  - build
+  # - acc-push
+
+
+build:
+  stage: "build"
+  script:
+    - .cicd/build.sh
+
+  only:
+    - optimize-for-argocd
+  artifacts:
+    paths:
+    - testserver-*.tgz
+    expire_in: 1 week
