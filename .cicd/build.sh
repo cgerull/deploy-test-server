@@ -21,4 +21,8 @@ done
 #         kubectl apply -f kubernetes/${env}/${chart}.yaml --dry-run=client
 #     done
 # fi
+git remote rm origin && git remote add origin "git@$GITLAB_URL:${CI_PROJECT_PATH}.git"
+git add kubernetes/*
+git commit -m "Build manifests for build ${CI_PIPELINE_IID}" || echo "No changes, nothing to commit!"
+git push origin HEAD:$CI_COMMIT_REF_NAME
     
