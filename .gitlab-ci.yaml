@@ -7,17 +7,31 @@ default:
 
 stages:
   - build
-  # - acc-push
+  - manifests
+  - push-acc
 
 
-build:
+build-package:
   stage: "build"
   script:
     - .cicd/build.sh
-
   only:
     - optimize-for-argocd
   artifacts:
     paths:
-    - testserver-*.tgz
+    - *.tgz
     expire_in: 1 week
+
+build-manifests:
+  stage: manifests
+  script:
+    - .cicd/build-manifests.sh
+  only:
+    - optimize-for-argocd
+
+push-package-acc:
+  stage: "push-acc"
+  script:
+    - .cicd/push-acc.sh
+  only:
+    - optimize-for-argocd
