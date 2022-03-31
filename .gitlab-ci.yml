@@ -1,6 +1,6 @@
 variables:
   CHART: testserver
-  SCRIPTS_REPO: https://gitlab.solvinity.net/shared-services/docker/scripts/ci-scripts
+  SCRIPTS_REPO: https://gitlab.com/cgerull-orchestration/ci-scripts
 before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
