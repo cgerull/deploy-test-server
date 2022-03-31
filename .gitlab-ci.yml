@@ -5,6 +5,8 @@ before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
   - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  - wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - | \
+          tar xz && mv ${BINARY} /usr/bin/yq
 
 # default:
 #   tags:
