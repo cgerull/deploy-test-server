@@ -5,9 +5,9 @@ before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
 
-default:
-  tags:
-    - sse-docker
+# default:
+#   tags:
+#     - sse-docker
 
 stages:
   - build
