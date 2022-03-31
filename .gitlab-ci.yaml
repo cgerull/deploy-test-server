@@ -1,4 +1,5 @@
 variables:
+  CHART: testserver
   SCRIPTS_REPO: https://gitlab.solvinity.net/shared-services/docker/scripts/ci-scripts
 before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
@@ -14,9 +15,7 @@ default:
 
 stages:
   - build
-  - manifests
-  - push-acc
-
+  - test
 
 build-chart-package:
   stage: "build"
@@ -34,13 +33,13 @@ build-chart-package:
 generate-manifests:
   stage: build
   script:
-    - .cicd/build-manifests.sh
+     - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh charts/${CHART} dev
   only:
     - optimize-for-argocd
 
-push-package-acc:
-  stage: "push-acc"
+test-manifests:
+  stage: "test"
   script:
-    - .cicd/push-acc.sh
+    - ${SCRIPTS_DIR}/build/test-kubernetes-manifests.sh charts/${CHART} dev
   only:
     - optimize-for-argocd
