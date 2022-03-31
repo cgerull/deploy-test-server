@@ -1,5 +1,12 @@
 variables:
-  GIT_SUBMODULE_STRATEGY: recursive
+  SCRIPTS_REPO: https://gitlab.solvinity.net/shared-services/docker/scripts/ci-scripts
+before_script:
+  - export SCRIPTS_DIR=$(mktemp -d)
+  - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
+  - echo "CI_COMMIT_REF_NAME: ${CI_COMMIT_REF_NAME}"
+  - echo "CI_COMMIT_TAG: ${CI_COMMIT_TAG}"
+  - echo "CI_PIPELINE_IID: ${CI_PIPELINE_IID}"
+  - echo "CI_PIPELINE_SOURCE: ${CI_PIPELINE_SOURCE}"
 
 default:
   tags:
@@ -11,19 +18,21 @@ stages:
   - push-acc
 
 
-build-package:
+build-chart-package:
   stage: "build"
+  variables:
+    CHART: testserver
   script:
-    - .cicd/build.sh
+    - ${SCRIPTS_DIR}/build/build-helm.sh charts/${CHART} ${CI_PIPELINE_IID}
   only:
     - optimize-for-argocd
   artifacts:
     paths:
-    - *.tgz
+    - ${CHART}-*.tgz
     expire_in: 1 week
 
-build-manifests:
-  stage: manifests
+generate-manifests:
+  stage: build
   script:
     - .cicd/build-manifests.sh
   only:
