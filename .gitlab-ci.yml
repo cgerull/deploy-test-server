@@ -4,10 +4,6 @@ variables:
 before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
-  - echo "CI_COMMIT_REF_NAME: ${CI_COMMIT_REF_NAME}"
-  - echo "CI_COMMIT_TAG: ${CI_COMMIT_TAG}"
-  - echo "CI_PIPELINE_IID: ${CI_PIPELINE_IID}"
-  - echo "CI_PIPELINE_SOURCE: ${CI_PIPELINE_SOURCE}"
 
 default:
   tags:
@@ -22,6 +18,10 @@ build-chart-package:
   variables:
     CHART: testserver
   script:
+    - echo "CI_COMMIT_REF_NAME ${CI_COMMIT_REF_NAME}"
+    - echo "CI_COMMIT_TAG ${CI_COMMIT_TAG}"
+    - echo "CI_PIPELINE_IID ${CI_PIPELINE_IID}"
+    - echo "CI_PIPELINE_SOURCE ${CI_PIPELINE_SOURCE}"
     - ${SCRIPTS_DIR}/build/build-helm.sh charts/${CHART} ${CI_PIPELINE_IID}
   only:
     - optimize-for-argocd
