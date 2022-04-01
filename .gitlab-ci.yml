@@ -6,29 +6,51 @@ variables:
 before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
-  - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  - curl -L https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz > ${YQ_BINARY}.tar.gz
-  - tar -zxf ${YQ_BINARY}.tar.gz
-  - chmod +x ${YQ_BINARY} && mv ${YQ_BINARY} /usr/bin/yq
+  - [ -f ./version ] && export VERSION=$(cat ./version) 
 
 # default:
 #   tags:
 #     - ubuntu
 
 stages:
+  - prepare
   - build
   - test
   - publish
+
+version:
+  image: python:3.7-stretch
+  stage: prepare
+  script:
+    - pip install semver
+    - $SCRIPTS_DIR/common/gen-semver > version
+  artifacts:
+    paths:
+      - version
+  only:
+    - branches
+
+env:
+  stage: prepare
+  script:
+    - env
+
 
 build-chart-package:
   stage: "build"
   variables:
     CHART: testserver
   script:
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    - curl -L https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz > ${YQ_BINARY}.tar.gz
+    - tar -zxf ${YQ_BINARY}.tar.gz
+    - chmod +x ${YQ_BINARY} && mv ${YQ_BINARY} /usr/bin/yq
+    - echo "ls version && cat version"
     - echo "CI_COMMIT_REF_NAME ${CI_COMMIT_REF_NAME}"
     - echo "CI_COMMIT_TAG ${CI_COMMIT_TAG}"
     - echo "CI_PIPELINE_IID ${CI_PIPELINE_IID}"
     - echo "CI_PIPELINE_SOURCE ${CI_PIPELINE_SOURCE}"
+    - echo "CI_COMMIT_SHA ${CI_COMMIT_SHA}"
     # - echo "PWD $(ls -lisa)"
     # - echo "TMP $(ls -lisa ${SCRIPTS_DIR})"
     # - echo "bin $(ls -lisa /bin)"
@@ -47,7 +69,8 @@ build-chart-package:
 generate-manifests:
   stage: build
   script:
-     - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} dev
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} dev
   only:
     - optimize-for-argocd
 
@@ -64,6 +87,7 @@ publish-helm-chart:
     CHANNEL: "stable"
   needs:
     - build-chart-package
+  image: curlimages/curl:latest
   stage: publish
   script:
     - |
