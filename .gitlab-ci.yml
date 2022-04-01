@@ -7,7 +7,7 @@ before_script:
   - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   - wget https://github.com/mikefarah/yq/releases/download/v4.24.2/yq_linux_amd64 -O /usr/bin/yq && \
           chmod +x /usr/bin/yq
-
+image: ubuntu:focal
 # default:
 #   tags:
 #     - sse-docker
