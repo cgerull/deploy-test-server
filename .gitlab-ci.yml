@@ -15,7 +15,7 @@ before_script:
 
 stages:
   - build
-  - test
+  # - test
 
 build-chart-package:
   stage: "build"
@@ -30,7 +30,10 @@ build-chart-package:
     - echo "CI_PIPELINE_SOURCE ${CI_PIPELINE_SOURCE}"
     - echo "PWD $(ls -lisa)"
     - echo "TMP $(ls -lisa ${SCRIPTS_DIR})"
-    - ${SCRIPTS_DIR}/build/build-helm-package.sh ${CHART} ${CI_PIPELINE_IID}
+    - echo "bin $(ls -lisa /bin)"
+    - echo "usrbin $(ls -lisa /usr/bin)"
+    - echo "env $(env)"
+    # - ${SCRIPTS_DIR}/build/build-helm-package.sh ${CHART} ${CI_PIPELINE_IID}
   only:
     - optimize-for-argocd
   artifacts:
@@ -38,16 +41,16 @@ build-chart-package:
     - ${CHART}-*.tgz
     expire_in: 1 week
 
-generate-manifests:
-  stage: build
-  script:
-     - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} dev
-  only:
-    - optimize-for-argocd
+# generate-manifests:
+#   stage: build
+#   script:
+#      - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} dev
+#   only:
+#     - optimize-for-argocd
 
-test-manifests:
-  stage: "test"
-  script:
-    - ${SCRIPTS_DIR}/build/test-kubernetes-manifests.sh ${CHART} dev
-  only:
-    - optimize-for-argocd
+# test-manifests:
+#   stage: "test"
+#   script:
+#     - ${SCRIPTS_DIR}/build/test-kubernetes-manifests.sh ${CHART} dev
+#   only:
+#     - optimize-for-argocd
