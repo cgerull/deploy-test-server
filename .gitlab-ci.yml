@@ -7,7 +7,7 @@ before_script:
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
   - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   - wget https://github.com/mikefarah/yq/releases/download/v4.24.2/yq_linux_amd64.tar.gz
-  - tar yq_linux_amd64.tar.gz
+  - tar -zxf yq_linux_amd64.tar.gz
   - mv yq_linux_amd64 /usr/bin/yq
 
 # image: ubuntu:focal
@@ -27,14 +27,16 @@ build-chart-package:
     - echo "$(uname -a)"
     - echo "$(which tar)"
     - echo "$(which helm)"
+    - export PATH=${PATH}:/usr/local/bin/
+    - echo "$(which helm)"
     - echo "CI_COMMIT_REF_NAME ${CI_COMMIT_REF_NAME}"
     - echo "CI_COMMIT_TAG ${CI_COMMIT_TAG}"
     - echo "CI_PIPELINE_IID ${CI_PIPELINE_IID}"
     - echo "CI_PIPELINE_SOURCE ${CI_PIPELINE_SOURCE}"
     - echo "PWD $(ls -lisa)"
     - echo "TMP $(ls -lisa ${SCRIPTS_DIR})"
-    - echo "bin $(ls -lisa /bin)"
-    - echo "usrbin $(ls -lisa /usr/bin)"
+    # - echo "bin $(ls -lisa /bin)"
+    # - echo "usrbin $(ls -lisa /usr/bin)"
     - echo "env $(env)"
     # - ${SCRIPTS_DIR}/build/build-helm-package.sh ${CHART} ${CI_PIPELINE_IID}
   only:
