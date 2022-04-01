@@ -51,6 +51,6 @@ generate-manifests:
 test-manifests:
   stage: "test"
   script:
-    - ${SCRIPTS_DIR}/build/test-kubernetes-manifests.sh ${CHART} dev
+    - ${SCRIPTS_DIR}/test/test-kubernetes-manifests.sh ${CHART} dev
   only:
     - optimize-for-argocd
