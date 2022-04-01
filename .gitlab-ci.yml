@@ -59,7 +59,7 @@ test-manifests:
     - optimize-for-argocd
 
 publish-helm-chart:
-  image: curlimages/curl:latest
+  # image: curlimages/curl:latest
   variables:
     CHANNEL: "stable"
   needs:
