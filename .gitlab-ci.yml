@@ -23,7 +23,7 @@ version:
   stage: prepare
   script:
     - pip install semver
-    - $SCRIPTS_DIR/common/gen-semver > version
+    - $SCRIPTS_DIR/common/gen-semver.py > version
   artifacts:
     paths:
       - version
