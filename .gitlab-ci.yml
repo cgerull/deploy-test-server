@@ -1,13 +1,15 @@
 variables:
   CHART: testserver
   SCRIPTS_REPO: https://$SCRIPTS_USER:$SCRIPTS_TOKEN@gitlab.com/cgerull-orchestration/ci-scripts
+  YQ_VERSION: v4.24.2
+  YQ_BINARY: yq_linux_amd64
 before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
   - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  - curl -L https://github.com/mikefarah/yq/releases/download/v4.24.2/yq_linux_amd64.tar.gz > yq_linux_amd64_2.tar.gz
-  - tar -zxf yq_linux_amd64.tar.gz
-  - chmod +x yq_linux_amd64 && mv yq_linux_amd64 /usr/bin/yq
+  - curl -L https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz > ${YQ_BINARY}.tar.gz
+  - tar -zxf ${YQ_BINARY}.tar.gz
+  - chmod +x ${YQ_BINARY} && mv ${YQ_BINARY} /usr/bin/yq
 
 # default:
 #   tags:
@@ -60,6 +62,8 @@ publish-helm-chart:
   image: curlimages/curl:latest
   variables:
     CHANNEL: "stable"
+  needs:
+    - build-chart-package
   stage: publish
   script:
     - 'curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@${CHART}-*.tgz" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/${CHANNEL}/charts"'
