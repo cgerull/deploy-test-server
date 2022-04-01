@@ -6,8 +6,8 @@ before_script:
   - apt-get install -y tar
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
   - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  - wget https://github.com/mikefarah/yq/releases/download/v4.24.2/yq_linux_amd64 -O /usr/bin/yq && \
-          /usr/bin/chmod +x /usr/bin/yq
+    - wget https://github.com/mikefarah/yq/releases/download/v4.24.2/yq_linux_amd64.tar.gz -O - | \
+          /usr/bin/tar xz && mv yq_linux_amd64 /usr/bin/yq
 # image: ubuntu:focal
 # default:
 #   tags:
