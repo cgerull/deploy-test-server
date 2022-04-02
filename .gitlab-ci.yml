@@ -34,7 +34,7 @@ version:
   only:
     - branches
 
-env:
+environment:
   stage: prepare
   script:
     - env
@@ -77,17 +77,22 @@ generate-manifests:
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} dev
   only:
-    - optimize-for-argocd
+    refs:
+      - optimize-for-argocd
+    changes:
+      - charts
 
 test-manifests:
   stage: "test"
   script:
     - ${SCRIPTS_DIR}/test/test-kubernetes-manifests.sh ${CHART} dev
   only:
-    - optimize-for-argocd
+    refs:
+      - optimize-for-argocd
+    changes:
+      - kubernetes
 
 publish-helm-chart:
-  # image: curlimages/curl:latest
   variables:
     CHANNEL: "stable"
   needs:
@@ -100,3 +105,6 @@ publish-helm-chart:
         echo "Upload ${file} to ${CI_API_V4_URL}"
         curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@${file}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/${CHANNEL}/charts"
       done
+  only:
+    # merge_requests is another option
+    - main
