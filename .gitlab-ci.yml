@@ -23,6 +23,10 @@ version:
   stage: prepare
   script:
     - pip install semver
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - $SCRIPTS_DIR/common/gen-semver.py > version
   artifacts:
     paths:
