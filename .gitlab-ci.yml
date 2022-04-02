@@ -33,7 +33,9 @@ version:
     paths:
       - version
   only:
-    - branches
+    refs:
+      - merge_requests
+      - branches
 
 environment:
   stage: prepare
@@ -50,9 +52,10 @@ build-chart-package:
     - curl -L https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz > ${YQ_BINARY}.tar.gz
     - tar -zxf ${YQ_BINARY}.tar.gz
     - chmod +x ${YQ_BINARY} && mv ${YQ_BINARY} /usr/bin/yq
-    - echo "ls ./version && cat ./version"
-    - echo "Version ${VERSION}"
-    - ${SCRIPTS_DIR}/build/build-helm-package.sh ${CHART} ${VERSION}  #${CI_PIPELINE_IID}
+    # - echo "ls ./version && cat ./version"
+    # - echo "Version ${VERSION}"
+    # - "[ -z $VERSION ] && export VERSION=${CI_PIPELINE_IID}"
+    - ${SCRIPTS_DIR}/build/build-helm-package.sh ${CHART} ${CI_PIPELINE_IID}
   only:
     - optimize-for-argocd
   artifacts:
@@ -97,6 +100,8 @@ publish-helm-chart:
         echo "Upload ${file} to ${CI_API_V4_URL}"
         curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@${file}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/${CHANNEL}/charts"
       done
-  # only:
-  #   # merge_requests is another option
-  #   - main
+  only:
+    refs:
+      # merge_requests is another option
+      # - main
+      - optimize-for-argocd
