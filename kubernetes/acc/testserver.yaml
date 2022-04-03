@@ -64,7 +64,7 @@ spec:
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
-          image: "cgerull/testserver:0.9.3"
+          image: "cgerull/testserver:0.9.1"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -72,9 +72,7 @@ spec:
               protocol: TCP
           env:
             - name: SECRET_KEY
-              value: SseTestHelmChartSecret
-            - name: FLASK_ENV
-              value: Test
+              value: TestAccHelmChartSecret
           livenessProbe:
             httpGet:
               path: /health
