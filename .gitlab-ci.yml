@@ -60,7 +60,7 @@ build-chart-package:
     refs:
       - optimize-for-argocd
     changes:
-      - charts
+      - charts/*
   artifacts:
     paths:
     - ${CHART}-*.tgz
@@ -77,7 +77,7 @@ generate-manifests:
     refs:
       - optimize-for-argocd
     changes:
-      - charts
+      - charts/*
 
 test-manifests:
   stage: "test"
@@ -87,7 +87,7 @@ test-manifests:
     refs:
       - optimize-for-argocd
     changes:
-      - kubernetes
+      - kubernetes/*
 
 publish-helm-chart:
   variables:
@@ -111,4 +111,4 @@ publish-helm-chart:
       - main
       - optimize-for-argocd
     changes:
-      - charts
+      - charts/*
