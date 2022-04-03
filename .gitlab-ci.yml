@@ -43,7 +43,7 @@ environment:
 
 
 build-chart-package:
-  stage: "build"
+  stage: build
   variables:
     CHART: testserver
   script:
@@ -62,11 +62,13 @@ build-chart-package:
 
 generate-manifests:
   stage: build
+  variables:
+    MANIFEST_FOLDER: kubernetes
   script:
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} dev
     # - ${SCRIPTS_DIR}/common/git-ssh-key.sh "gitlab.com" "$SSH_PRIVATE_KEY"
-    - ${SCRIPTS_DIR}/common/push-back.sh "${CI_REPOSITORY_URL}" kubernetes ${CI_BUILD_REF_NAME} ${SSH_PRIVATE_KEY} 
+    - ${SCRIPTS_DIR}/common/push-back.sh "${CI_REPOSITORY_URL}" "${MANIFEST_FOLDER}" "${CI_BUILD_REF_NAME}" "${SSH_PRIVATE_KEY}"
   only:
     refs:
       - optimize-for-argocd
