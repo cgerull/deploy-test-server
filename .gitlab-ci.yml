@@ -110,3 +110,5 @@ publish-helm-chart:
       # merge_requests is another option
       - main
       - optimize-for-argocd
+    changes:
+      - charts
