@@ -55,8 +55,6 @@ build-chart-package:
   only:
     refs:
       - optimize-for-argocd
-    # changes:
-    #   - charts/*
   artifacts:
     paths:
     - ${CHART}-*.tgz
@@ -67,13 +65,11 @@ generate-manifests:
   script:
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} dev
-    - ${SCRIPTS_DIR}/common/git-ssh-key.sh "gitlab.com" "$SSH_PRIVATE_KEY"
-    - ${SCRIPTS_DIR}/common/push-back.sh "${CI_REPOSITORY_URL}" kubernetes ${CI_BUILD_REF_NAME} ${CI_PIPELINE_ID} 
+    # - ${SCRIPTS_DIR}/common/git-ssh-key.sh "gitlab.com" "$SSH_PRIVATE_KEY"
+    - ${SCRIPTS_DIR}/common/push-back.sh "${CI_REPOSITORY_URL}" kubernetes ${CI_BUILD_REF_NAME} ${SSH_PRIVATE_KEY} 
   only:
     refs:
       - optimize-for-argocd
-    # changes:
-    #   - charts/*
 
 test-manifests:
   stage: "test"
