@@ -36,10 +36,10 @@ version:
       - merge_requests
       # - branches
 
-environment:
-  stage: prepare
-  script:
-    - env | sort
+# environment:
+#   stage: prepare
+#   script:
+#     - env | sort
 
 
 build-chart-package:
