@@ -40,7 +40,7 @@ version:
 environment:
   stage: prepare
   script:
-    - env
+    - env | sort
 
 
 build-chart-package:
