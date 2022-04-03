@@ -10,7 +10,7 @@ before_script:
 
 # default:
 #   tags:
-#     - ubuntu
+#     - linux
 
 stages:
   - prepare
@@ -27,7 +27,6 @@ version:
     - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    # - unset SSH_PRIVATE_KEY
     - $SCRIPTS_DIR/common/gen-semver.py > version
   artifacts:
     paths:
@@ -52,15 +51,12 @@ build-chart-package:
     - curl -L https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}.tar.gz > ${YQ_BINARY}.tar.gz
     - tar -zxf ${YQ_BINARY}.tar.gz
     - chmod +x ${YQ_BINARY} && mv ${YQ_BINARY} /usr/bin/yq
-    # - echo "ls ./version && cat ./version"
-    # - echo "Version ${VERSION}"
-    # - "[ -z $VERSION ] && export VERSION=${CI_PIPELINE_IID}"
     - ${SCRIPTS_DIR}/build/build-helm-package.sh ${CHART} ${CI_PIPELINE_IID}
   only:
     refs:
       - optimize-for-argocd
-    changes:
-      - charts/*
+    # changes:
+    #   - charts/*
   artifacts:
     paths:
     - ${CHART}-*.tgz
@@ -76,8 +72,8 @@ generate-manifests:
   only:
     refs:
       - optimize-for-argocd
-    changes:
-      - charts/*
+    # changes:
+    #   - charts/*
 
 test-manifests:
   stage: "test"
@@ -107,8 +103,6 @@ publish-helm-chart:
       done
   only:
     refs:
-      # merge_requests is another option
-      - main
-      - optimize-for-argocd
+      - merge_requests
     changes:
       - charts/*
