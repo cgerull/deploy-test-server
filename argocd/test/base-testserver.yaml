@@ -10,5 +10,5 @@ spec:
   project: sse-test
   source:
     path: kubernetes/sse-test
-    repoURL: https://gitlab.solvinity.net/shared-services/docker/kubernetes/deploy-testserver.git
+    repoURL: https://gitlab.com/cgerull-orchestration/helm/deploy-testserver.git
     targetRevision: optimize-for-argocd

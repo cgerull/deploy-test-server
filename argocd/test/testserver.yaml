@@ -16,5 +16,5 @@ spec:
         value: SseTestArgoCDSecret
       valueFiles:
       - values.yaml
-    repoURL: https://artifacts.solvinity.net/repository/helm3-sse-acc/
+    repoURL: https://gitlab.com/cgerull-orchestration/helm/deploy-testserver.git
     targetRevision: 0.1.0
