@@ -1,7 +1,8 @@
 ## Install on kubernetes
 
 ```bash
-# Add hashicorp repo and installhelm, chart
+# For test and demo install a local vault instance.
+# Add hashicorp repo and install helmchart
 helm repo add hashicorp https://helm.releases.hashicorp.com
 
 helm install vault hashicorp/vault -n vault --create-namespace
@@ -38,6 +39,14 @@ vault kv put kv/local/cgerull/secret SECRET_KEY=hashicorpVaultSecret
 
 ## Setup kubernetes authentication
 
+Enable kubernetes authentication in Hashicorp vault. 
+We need:
+
+- the kubernetes URL
+- the kubernetes certificate
+- an account token 
+
+
 ```bash
 # First create a policy
 vault policy write demo-policy -<<EOF     
@@ -47,6 +56,8 @@ path "kv/data/path/to/my/secret"
 EOF
 
 ## Enable and setup kubernetes authentication
+
+
 vault auth enable kubernetes
 
 k8s_host="$(kubectl exec vault-0 -n vault -- printenv | grep KUBERNETES_PORT_443_TCP_ADDR | cut -f 2- -d "=" | tr -d " ")"
