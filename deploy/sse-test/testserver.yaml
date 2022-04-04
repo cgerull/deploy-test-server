@@ -1,0 +1,15 @@
+# Dev configuaration
+#
+image:
+  tag: 0.9.3
+  
+replicaCount: 1
+
+env:
+  - name: SECRET_KEY
+    value: SseTestHelmChartSecret
+  - name: FLASK_ENV
+    value: 'Test'
+
+ingress:
+  enabled: false
