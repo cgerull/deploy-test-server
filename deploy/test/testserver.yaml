@@ -3,11 +3,11 @@
 image:
   tag: 0.9.3
   
-replicaCount: 1
+replicaCount: 2
 
 env:
   - name: SECRET_KEY
-    value: SseTestHelmChartSecret
+    value: TestHelmChartSecret
   - name: FLASK_ENV
     value: 'Test'
 
