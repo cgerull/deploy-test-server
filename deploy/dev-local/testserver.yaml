@@ -10,13 +10,13 @@ env:
     value: DevHelmChartSecret
 
 ingress:
-  enabled: false
+  enabled: true
   className: "traefik"
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.middlewares: dev-environment-testserver-stripprefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: dev-local-testserver-stripprefix@kubernetescrd
   hosts:
-    - host: localhost
+    - host: testserver-local
       paths:
         - path: /test
           pathType: Prefix
@@ -24,4 +24,4 @@ ingress:
             service:
               name: testserver
               port:
-                number: 80
+                number: 8081
