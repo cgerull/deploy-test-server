@@ -1,4 +1,4 @@
-{{- if .Values.ingress.className }}
+{{- if and .Values.ingress.enabled .Values.ingress.className }}
 {{- if eq .Values.ingress.className "traefik" }}
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
