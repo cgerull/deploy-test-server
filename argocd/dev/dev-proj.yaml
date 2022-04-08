@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: testsuite
-  namespace: dev-environment
+  namespace: argocd
 spec:
   description: This Project contains configuration for the Dev environment.
   destinations:
