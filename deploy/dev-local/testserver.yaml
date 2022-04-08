@@ -9,9 +9,6 @@ env:
   - name: SECRET_KEY
     value: DevHelmChartSecret
 
-service:
-  type: LoadBalancer
-
 ingress:
   enabled: false
   className: "traefik"
