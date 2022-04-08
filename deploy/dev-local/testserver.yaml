@@ -24,4 +24,4 @@ ingress:
             service:
               name: testserver
               port:
-                number: 8081
+                number: 80
