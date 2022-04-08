@@ -11,7 +11,7 @@ items:
       namespace: dev-local
       server: https://kubernetes.default.svc
     source:
-      path: kubernetes/dev
+      path: kubernetes/dev-local
       repoURL: https://github.com/cgerull/deploy-test-server
       targetRevision: localtest
     syncPolicy:
