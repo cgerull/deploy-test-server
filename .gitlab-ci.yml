@@ -53,8 +53,8 @@ build-chart-package:
     - chmod +x ${YQ_BINARY} && mv ${YQ_BINARY} /usr/bin/yq
     - ${SCRIPTS_DIR}/build/build-helm-package.sh ${CHART} ${CI_PIPELINE_IID}
   only:
-    refs:
-      - optimize-for-argocd
+    changes:
+      - charts/*
   artifacts:
     paths:
     - ${CHART}-*.tgz
@@ -69,16 +69,14 @@ generate-manifests:
     - ${SCRIPTS_DIR}/build/generate-kubernetes-manifests.sh ${CHART} all
     - ${SCRIPTS_DIR}/common/push-back.sh "${CI_REPOSITORY_URL}" "${MANIFEST_FOLDER}" "${CI_BUILD_REF_NAME}" "${SSH_PRIVATE_KEY}"
   only:
-    refs:
-      - optimize-for-argocd
+    changes:
+      - charts/*
 
 test-manifests:
   stage: "test"
   script:
     - ${SCRIPTS_DIR}/test/test-kubernetes-manifests.sh ${CHART} dev
   only:
-    refs:
-      - optimize-for-argocd
     changes:
       - kubernetes/*
 
