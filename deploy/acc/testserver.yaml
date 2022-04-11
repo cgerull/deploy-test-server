@@ -4,4 +4,6 @@ replicaCount: 1
 env:
   - name: SECRET_KEY
     value: TestAccHelmChartSecret
+  - name: FLASK_ENV
+    value: 'Acc'
 

@@ -5,19 +5,20 @@ image:
   
 replicaCount: 1
 
+service:
+  port: 8080
+
+
 env:
   - name: SECRET_KEY
     value: DevHelmChartSecret
-  - name: FLASK_ENV
-    value: 'Dev'
 
 ingress:
   enabled: true
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    # traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
   hosts:
-    - host: testserver.local
+    - host: testserver-local
       paths:
         - path: /
           pathType: Prefix
@@ -25,4 +26,4 @@ ingress:
             service:
               name: testserver
               port:
-                number: 80
+                number: 8080
