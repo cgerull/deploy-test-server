@@ -12,4 +12,16 @@ env:
     value: 'Test'
 
 ingress:
-  enabled: false
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: testserver-test.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: testserver
+              port:
+                number: 80

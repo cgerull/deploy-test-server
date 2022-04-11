@@ -3,11 +3,11 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: release-name-testserver
+  name: testserver
   labels:
     helm.sh/chart: testserver-0.1.0
     app.kubernetes.io/name: testserver
-    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "0.9.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,11 +15,11 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: release-name-testserver
+  name: testserver
   labels:
     helm.sh/chart: testserver-0.1.0
     app.kubernetes.io/name: testserver
-    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "0.9.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -31,17 +31,17 @@ spec:
       name: http
   selector:
     app.kubernetes.io/name: testserver
-    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/instance: testserver
 ---
 # Source: testserver/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: release-name-testserver
+  name: testserver
   labels:
     helm.sh/chart: testserver-0.1.0
     app.kubernetes.io/name: testserver
-    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/instance: testserver
     app.kubernetes.io/version: "0.9.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -49,14 +49,14 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: testserver
-      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/instance: testserver
   template:
     metadata:
       labels:
         app.kubernetes.io/name: testserver
-        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/instance: testserver
     spec:
-      serviceAccountName: release-name-testserver
+      serviceAccountName: testserver
       securityContext:
         {}
       containers:
@@ -90,3 +90,29 @@ spec:
             requests:
               cpu: 50m
               memory: 64Mi
+---
+# Source: testserver/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: testserver
+  labels:
+    helm.sh/chart: testserver-0.1.0
+    app.kubernetes.io/name: testserver
+    app.kubernetes.io/instance: testserver
+    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - host: "testserver-test.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: testserver
+                port:
+                  number: 80

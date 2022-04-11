@@ -1,5 +1,8 @@
-{{- if and .Values.ingress.enabled .Values.ingress.className }}
-{{- if eq .Values.ingress.className "traefik" }}
+{{- if and .Values.ingress.enabled .Values.ingress.traefikStripPrefix }}
+{{/*
+Needs also an annotation in the ingress manifest
+traefik.ingress.kubernetes.io/router.middlewares: <namespace>-<service>-stripprefix@kubernetescrd
+*/}}
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
@@ -13,5 +16,4 @@ spec:
         - "{{ .path }}"
       {{- end }}
     {{- end }}
-{{- end }}
 {{- end }}
