@@ -16,7 +16,7 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: testserver-test.local
+    - host: testserver
       paths:
         - path: /
           pathType: Prefix
