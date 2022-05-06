@@ -1,26 +1,28 @@
-# Default values for testserver.
+# -- Default values for testserver.
 replicaCount: 1
 
 image:
   repository: cgerull/testserver
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
-
-labels:
-  app: testsuite
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# -- Extra labels
+labels:
+  app.kubernetes.io/app: testsuite
+
+# -- Configure (cluster-)roles for granulated permissions.
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
   name: ""
 
 podAnnotations: {}
@@ -28,6 +30,7 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
+# -- Should be set to least privileges.
 securityContext:
   # capabilities:
   #   drop:
@@ -36,6 +39,7 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
+# -- Expose standard Http port
 service:
   type: ClusterIP
   port: 80
@@ -45,25 +49,31 @@ port:
   type: ContainerPort
   port: 8080
 
-
+# -- Set to fit target environment
 ingress:
   enabled: false
   traefikStripPrefix: ''
   tls: []
 
+# -- Basic application settings, see test-server README for full details.
 env:
   - name: SECRET_KEY
     value: HelmChartSecret
+  - name: REDIS_HOST
+    value: None
+  - name: REDIS_PASSWORD
+    value: None
 
+# -- Minimun values, increase in downstream configs.
 resources:
-  # Minimun values, increase in downstream configs.
   limits:
     cpu: 100m
     memory: 128Mi
   requests:
     cpu: 50m
-    memory: 64Mi
+    memory: 48Mi
 
+# -- Horizontal scaling settings.
 autoscaling:
   enabled: false
   minReplicas: 1
