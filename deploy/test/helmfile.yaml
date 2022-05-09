@@ -1,0 +1,34 @@
+repositories:
+  # To use official "stable" charts a.k.a https://github.com/helm/charts/tree/master/stable
+  - name: stable
+    url: https://charts.helm.sh/stable
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+  # Published chart example
+  - name: vault                            # name of this release
+    namespace: vault                       # target namespace
+    createNamespace: true                  # helm 3.2+ automatically create release namespace (default true)
+    chart: hashicorp/vault     # the chart being installed to create this release, referenced by `repository/chart` syntax
+    version: ~0.19                      # the semver of the chart. range constraint is supported
+    values:
+      - vault.yaml
+
+  - name: testserver                            # name of this release
+    namespace: testserver                       # target namespace
+    createNamespace: true                  # helm 3.2+ automatically create release namespace (default true)
+    chart: ../../charts/testserver     # the chart being installed to create this release, referenced by `repository/chart` syntax
+    version: ~0.2                      # the semver of the chart. range constraint is supported
+    values:
+      - testserver.yaml
+
+  - name: redis 
+    namespace: testserver
+    createNamespace: true
+    chart: bitnami/redis
+    version: ~16.9
+
+
