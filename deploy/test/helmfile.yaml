@@ -9,26 +9,24 @@ repositories:
 
 releases:
   # Published chart example
-  - name: vault                            # name of this release
-    namespace: vault                       # target namespace
-    createNamespace: true                  # helm 3.2+ automatically create release namespace (default true)
-    chart: hashicorp/vault     # the chart being installed to create this release, referenced by `repository/chart` syntax
-    version: ~0.19                      # the semver of the chart. range constraint is supported
+  - name: vault
+    namespace: vault
+    chart: hashicorp/vault
+    version: ~0.19
     values:
       - vault.yaml
 
-  - name: testserver                            # name of this release
-    namespace: testserver                       # target namespace
-    createNamespace: true                  # helm 3.2+ automatically create release namespace (default true)
-    chart: ../../charts/testserver     # the chart being installed to create this release, referenced by `repository/chart` syntax
-    version: ~0.2                      # the semver of the chart. range constraint is supported
+  - name: testserver
+    namespace: testserver
+    chart: ../../charts/testserver
+    version: ~0.2
     values:
       - testserver.yaml
 
-  - name: redis 
-    namespace: testserver
-    createNamespace: true
+  - name: redis
+    namespace: testserver 
     chart: bitnami/redis
     version: ~16.9
+
 
 
