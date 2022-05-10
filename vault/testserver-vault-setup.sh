@@ -1,9 +1,13 @@
 #!/bin/bash
 #
-vault kv put internal/mysql/config username="root" password="db-secret-password"
+vault kv put local/mysql/config username="root" password="db-secret-password"
+vault kv put local/testserver/testsecret secret="vaultTestSecret"
 
 vault policy write testserver - <<EOF
-path "internal/data/mysql/config" {
+path "local/data/mysql/config" {
+  capabilities = ["read"]
+}
+path "local/data/testserver/testsecret" {
   capabilities = ["read"]
 }
 EOF

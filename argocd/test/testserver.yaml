@@ -7,13 +7,13 @@ spec:
   destination:
     namespace: testserver
     server: https://kubernetes.default.svc
-  project: sse-test
+  project: test
   source:
     chart: testserver
     helm:
       parameters:
       - name: env[0].value
-        value: SseTestArgoCDSecret
+        value: TestArgoCDSecret
       valueFiles:
       - values.yaml
     repoURL: https://gitlab.com/cgerull-orchestration/helm/deploy-testserver.git
