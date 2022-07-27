@@ -13,13 +13,13 @@ kubectl port-forward svc/vault -n vault 8200:8200 &
 vault operator init
 
 # Output
-Unseal Key 1: ogXK0b0ZSD5WnVE3EbbEJq/SDkM+aYgAtOKgtHG+34T+
-Unseal Key 2: 5sf+KuASrSrtv1622gy1CgmqFmHi5i4LROiLoN8WpHW4
-Unseal Key 3: TS76hEljOtKBGfzfzj+E0VePIfvosT4T8dQ5O4Zzm7/W
-Unseal Key 4: 7k0ManMuANB0KDSOv5EmySde5eycSdyFVIh7GtrWjOJS
-Unseal Key 5: sbf2w1jw0W1eVP3kTW+k6jtWLlRp9kCbSHqNsCP5mbeG
+Unseal Key 1: **************************************
+Unseal Key 2: **************************************
+Unseal Key 3: **************************************
+Unseal Key 4: **************************************
+Unseal Key 5: **************************************
 
-Initial Root Token: s.iHx9fds4enBKwCpN7wJYLIk8
+Initial Root Token: **************************************
 
 
 # Unseal vault and login
