@@ -88,3 +88,10 @@ tolerations: []
 affinity: {}
 
 testEnabled: false
+
+database:
+  enabled: false
+
+persistence:
+  enabled: false
+  accessMode: ReadWriteMany

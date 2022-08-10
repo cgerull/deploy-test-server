@@ -1,0 +1,27 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.data.reuse_pvc) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  annotations:
+    "helm.sh/resource-policy": keep
+{{- if .Values.persistence.data.existingClaim }}
+  name: "{{ .Values.persistence.data.existingClaim }}"
+{{- else }}
+  name: "{{ .Values.persistence.data.claim }}"
+{{- end }}
+  labels:
+    {{- include "testserver.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.data.size | quote }}
+{{- if .Values.persistence.data.storageClassName }}
+{{- if (eq "-" .Values.persistence.data.storageClassName) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.data.storageClassName }}"
+{{- end }}
+{{- end }}
+{{- end -}}

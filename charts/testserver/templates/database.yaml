@@ -1,0 +1,9 @@
+{{- if .Values.database.enabled -}}
+apiVersion: "sharedservices.solvinity.com/v1"
+kind: Database
+metadata:
+  name: {{ include "testserver.fullname" . }}
+spec:
+  driver: postgresql
+  prefix: namespace
+{{- end }}
