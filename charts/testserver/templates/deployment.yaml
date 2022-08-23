@@ -33,24 +33,51 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+         
+          {{- with .Values.ports }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.targetPort }}
-              protocol: TCP
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+
           {{- with .Values.env }}
           env:
           {{- toYaml . | nindent 12  }}
           {{- end }}
+
+          {{- if .Values.persistence.enabled -}}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+          {{- end -}}
+
+          {{- with .Values.livenessProbe }}
           livenessProbe:
-            httpGet:
-              path: /health
-              port: http
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+
+          {{- with .Values.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /health
-              port: http
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+          
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      
+      {{- if .Values.persistence.enabled -}}
+      {{- $pvcClaimName := .Values.persistence.data.claimName -}}
+      {{- range .Values.volumes }}
+      volumes:
+        - name: {{ . }}
+        {{- if ($pvcClaimName) }}
+          persistentVolumeClaim:
+            claimName: {{ $pvcClaimName }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- end }}
+      {{- end -}}
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

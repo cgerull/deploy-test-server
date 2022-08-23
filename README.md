@@ -58,3 +58,12 @@ InstallArgoCD app via argocd cli.
 ```bash
 argocd app create testserver --repo https://github.com/cgerull/deploy-test-server --path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace testserver --project testsuite
 ```
+
+## NetApp
+
+Install Trident driver.
+```bash
+helm repo add netapp-trident https://netapp.github.io/trident-helm-chart
+
+helm install my-trident-operator netapp-trident/trident-operator --version 22.7.0
+```

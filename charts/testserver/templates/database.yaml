@@ -6,4 +6,6 @@ metadata:
 spec:
   driver: postgresql
   prefix: namespace
+  secret_store: kubernetes
+  remove: true
 {{- end }}
