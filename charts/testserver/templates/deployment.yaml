@@ -34,13 +34,13 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
          
-          {{- with .Values.ports }}
-          ports:
+          {{- with .Values.env }}
+          env:
           {{- toYaml . | nindent 12  }}
           {{- end }}
 
-          {{- with .Values.env }}
-          env:
+          {{- with .Values.ports }}
+          ports:
           {{- toYaml . | nindent 12  }}
           {{- end }}
 
@@ -63,18 +63,13 @@ spec:
           
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      
+     
       {{- if .Values.persistence.enabled -}}
-      {{- $pvcClaimName := .Values.persistence.data.claimName -}}
-      {{- range .Values.volumes }}
       volumes:
-        - name: {{ . }}
-        {{- if ($pvcClaimName) }}
+      {{- range .Values.volumes }}
+        - name: {{ .name }}
           persistentVolumeClaim:
-            claimName: {{ $pvcClaimName }}
-        {{- else }}
-          emptyDir: {}
-        {{- end }}
+            claimName: {{ .claimName }}
       {{- end }}
       {{- end -}}
 

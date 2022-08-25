@@ -89,10 +89,11 @@ resources:
     memory: 48Mi
 
 volumes:
-  - testserver-data
-  # dataName: confluence-data
-  # use persistence.claimName if enabled
-  # dataPvcClaim: confluence
+  - name: testserver-data
+    claimName: testserver-data
+    storageClass: ""
+    size: 1G
+    accessMode: ReadWriteMany
 
 # -- Horizontal scaling settings.
 autoscaling:
@@ -113,13 +114,7 @@ database:
 
 persistence:
   enabled: false
-  accessMode: ReadWriteMany
-  data:
-    claimName: testserver 
-    storageClassName: ""
-    size: "1Gi"
-  snapshots: 
-    enabled: false
+  snapshots: false
 
 tests:
   enabled: false
