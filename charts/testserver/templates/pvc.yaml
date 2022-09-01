@@ -16,5 +16,6 @@ spec:
     requests:
       storage: {{ .size | quote }}
       storageClassName: "{{ .storageClass }}"
+---
 {{- end }}
 {{- end -}}
