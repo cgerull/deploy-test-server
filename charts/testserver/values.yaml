@@ -45,9 +45,10 @@ service:
   port: 80
   targetPort: 8080
 
-port:
-  type: ContainerPort
-  port: 8080
+ports:
+  - name: http
+    containerPort: 8080
+    protocol: TCP
 
 # -- Set to fit target environment
 ingress:
@@ -64,6 +65,20 @@ env:
   - name: REDIS_PASSWORD
     value: None
 
+volumeMounts:
+  - mountPath: /var/testserver
+    name: testserver-data
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+
 # -- Minimun values, increase in downstream configs.
 resources:
   limits:
@@ -72,6 +87,13 @@ resources:
   requests:
     cpu: 50m
     memory: 48Mi
+
+volumes:
+  - name: testserver-data
+    claimName: testserver-data
+    storageClass: ""
+    size: 1G
+    accessMode: ReadWriteMany
 
 # -- Horizontal scaling settings.
 autoscaling:
@@ -87,11 +109,12 @@ tolerations: []
 
 affinity: {}
 
-testEnabled: false
-
 database:
   enabled: false
 
 persistence:
   enabled: false
-  accessMode: ReadWriteMany
+  snapshots: false
+
+tests:
+  enabled: false

@@ -27,7 +27,7 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: testserver
+    - host: testserver-tst.mydomain.net
       paths:
         - path: /
           pathType: Prefix
@@ -36,3 +36,8 @@ ingress:
               name: testserver
               port:
                 number: 80
+
+persistence:
+  enabled: true
+  data:
+    size: "1Gi"

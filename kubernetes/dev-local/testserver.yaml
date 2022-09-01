@@ -5,10 +5,10 @@ kind: ServiceAccount
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.7"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: testserver/templates/service.yaml
@@ -17,15 +17,15 @@ kind: Service
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.7"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
   ports:
-    - port: 80
+    - port: 8080
       targetPort: 8080
       protocol: TCP
       name: http
@@ -39,10 +39,10 @@ kind: Deployment
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.7"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -64,15 +64,15 @@ spec:
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
-          image: "cgerull/testserver:0.9.3"
+          image: "cgerull/testserver:0.9.7"
           imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
           env:
             - name: SECRET_KEY
               value: DevHelmChartSecret
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /health
@@ -81,13 +81,14 @@ spec:
             httpGet:
               path: /health
               port: http
+          
           resources:
             limits:
               cpu: 100m
               memory: 128Mi
             requests:
               cpu: 50m
-              memory: 64Mi
+              memory: 48Mi
 ---
 # Source: testserver/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -95,17 +96,17 @@ kind: Ingress
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.7"
     app.kubernetes.io/managed-by: Helm
 spec:
   rules:
     - host: "testserver-local"
       http:
         paths:
-          - path: /test
+          - path: /
             pathType: Prefix
             backend:
               service:

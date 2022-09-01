@@ -1,8 +1,5 @@
 # Dev configuaration
 #
-image:
-  tag: 0.9.7
-  
 replicaCount: 1
 
 service:
