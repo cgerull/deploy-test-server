@@ -1,8 +1,5 @@
 # Dev configuaration
 #
-image:
-  tag: 0.9.6
-  
 replicaCount: 1
 
 service:
@@ -15,8 +12,6 @@ env:
 
 ingress:
   enabled: true
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
     - host: testserver-local
       paths:
