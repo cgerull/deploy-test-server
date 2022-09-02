@@ -5,17 +5,18 @@ replicaCount: 1
 service:
   port: 8080
 
-
 env:
   - name: SECRET_KEY
     value: DevHelmChartSecret
   - name: FLASK_ENV
-    value: Minikube
+    value: k3d-dev
 
 ingress:
   enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: testserver-local
+    - host: testserver.dev.local
       paths:
         - path: /
           pathType: Prefix
