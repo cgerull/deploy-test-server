@@ -1,11 +1,20 @@
 #!/bin/bash
 #
+# Install Flux components
+#
+export GITHUB_USER=cgerull
+export GITHUB_TOKEN=***************
+#
 flux bootstrap github \
     --owner="$GITHUB_USER" \
     --personal \
-    --repository=flux-example \
+    --repository=flux \
     --branch=main \
-    --path=./clusters/minikube
+    --path=./clusters/k3d-dev
+#
+# Install Aquasecurity operator
+#
+kubectl create ns starboard-system
 #
 flux create source helm starboard-operator \
     --url https://aquasecurity.github.io/helm-charts \
@@ -20,12 +29,14 @@ flux create helmrelease starboard-operator \
 #
 # Install an app to deploy
 #
+kubectl create ns testserver
+#
 flux create source git testserver \
     --url=https://github.com/cgerull/deploy-test-server.git \
     --branch=main
 #
-flux create kustomization testserver-app \
-  --target-namespace=app \
+flux create kustomization testserver \
+  --target-namespace=testserver \
   --source=testserver \
   --path="./kubernetes/dev-local/" \
   --prune=true \
