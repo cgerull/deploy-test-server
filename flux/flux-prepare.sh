@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Install Flux components
+# Install Flux components on local k3d cluster
 #
 export GITHUB_USER=cgerull
 export GITHUB_TOKEN=***************
@@ -11,6 +11,7 @@ flux bootstrap github \
     --repository=flux \
     --branch=main \
     --path=./clusters/k3d-dev
+#
 #
 # Install Aquasecurity operator
 #
@@ -25,6 +26,42 @@ flux create helmrelease starboard-operator \
     --source HelmRepository/starboard-operator \
     --chart-version 0.10.8 \
     --namespace starboard-system
+#
+#
+# Install Prometheus Grafana stack
+#
+kubectl create ns monitoring
+#
+flux create source git flux-monitoring \
+  --interval=30m \
+  --url=https://github.com/fluxcd/flux2 \
+  --branch=main
+#
+flux create kustomization kube-prometheus-stack \
+  --interval=1h \
+  --prune \
+  --source=flux-monitoring \
+  --path="./manifests/monitoring/kube-prometheus-stack" \
+  --health-check-timeout=5m \
+  --wait
+#
+flux create kustomization loki-stack \
+  --depends-on=kube-prometheus-stack \
+  --interval=1h \
+  --prune \
+  --source=flux-monitoring \
+  --path="./manifests/monitoring/loki-stack" \
+  --health-check-timeout=5m \
+  --wait
+#
+flux create kustomization monitoring-config \
+  --depends-on=kube-prometheus-stack \
+  --interval=1h \
+  --prune=true \
+  --source=flux-monitoring \
+  --path="./manifests/monitoring/monitoring-config" \
+  --health-check-timeout=1m \
+  --wait
 #
 #
 # Install an app to deploy
