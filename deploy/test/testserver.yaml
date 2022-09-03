@@ -1,7 +1,7 @@
-# Dev configuaration
+# Test configuaration with Redis and Vault
 #
 image:
-  tag: 0.9.5
+  tag: 0.9.8
   
 replicaCount: 1
 
@@ -19,7 +19,7 @@ podAnnotations:
 env:
   - name: SECRET_FILE
     value: "/run/secrets/testsecret"
-  - name: FLASK_ENV
+  - name: ENV
     value: 'Test'
 
 ingress:

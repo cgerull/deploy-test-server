@@ -1,4 +1,4 @@
-# Dev configuaration
+# Dev local configuaration
 #
 image:
   tag: "0.9.8"
@@ -11,8 +11,8 @@ service:
 env:
   - name: SECRET_KEY
     value: DevHelmChartSecret
-  - name: FLASK_ENV
-    value: k3d-dev
+  - name: ENV
+    value: "k3d-dev environment"
 
 ingress:
   enabled: true

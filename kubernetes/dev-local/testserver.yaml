@@ -69,8 +69,8 @@ spec:
           env:
             - name: SECRET_KEY
               value: DevHelmChartSecret
-            - name: FLASK_ENV
-              value: k3d-dev
+            - name: ENV
+              value: k3d-dev environment
           ports:
             - containerPort: 8080
               name: http

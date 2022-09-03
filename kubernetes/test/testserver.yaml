@@ -5,10 +5,10 @@ kind: ServiceAccount
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.3"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: testserver/templates/service.yaml
@@ -17,10 +17,10 @@ kind: Service
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.3"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -39,19 +39,28 @@ kind: Deployment
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.3"
     app.kubernetes.io/managed-by: Helm
 spec:
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: testserver
       app.kubernetes.io/instance: testserver
   template:
     metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-testsecret: local/data/testserver
+        vault.hashicorp.com/agent-inject-template-testsecret: |
+          {{- with secret "local/data/testserver" -}}
+          {{ .Data.data.secret }}
+          {{- end -}
+        vault.hashicorp.com/role: testserver
+        vault.hashicorp.com/secret-volume-path: /run/secrets
       labels:
         app.kubernetes.io/name: testserver
         app.kubernetes.io/instance: testserver
@@ -64,15 +73,15 @@ spec:
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
-          image: "cgerull/testserver:0.9.3"
+          image: "cgerull/testserver:0.9.5"
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           env:
-            - name: SECRET_KEY
-              value: TestHelmChartSecret
+            - name: SECRET_FILE
+              value: /run/secrets/testsecret
             - name: FLASK_ENV
               value: Test
           livenessProbe:
@@ -89,7 +98,7 @@ spec:
               memory: 128Mi
             requests:
               cpu: 50m
-              memory: 64Mi
+              memory: 48Mi
 ---
 # Source: testserver/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -97,10 +106,10 @@ kind: Ingress
 metadata:
   name: testserver
   labels:
-    helm.sh/chart: testserver-0.1.0
+    helm.sh/chart: testserver-0.2.0
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.1"
+    app.kubernetes.io/version: "0.9.3"
     app.kubernetes.io/managed-by: Helm
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
