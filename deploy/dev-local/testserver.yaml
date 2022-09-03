@@ -1,9 +1,12 @@
 # Dev configuaration
 #
+image:
+  tag: "0.9.8"
+
 replicaCount: 1
 
 service:
-  port: 8080
+  port: 80
 
 env:
   - name: SECRET_KEY
