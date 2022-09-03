@@ -2,21 +2,24 @@
 #
 image:
   tag: "0.9.8"
-  
+
 replicaCount: 1
 
 service:
-  port: 8080
-
+  port: 80
 
 env:
   - name: SECRET_KEY
     value: DevHelmChartSecret
+  - name: FLASK_ENV
+    value: k3d-dev
 
 ingress:
   enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: testserver-local
+    - host: testserver.dev.local
       paths:
         - path: /
           pathType: Prefix
@@ -24,4 +27,4 @@ ingress:
             service:
               name: testserver
               port:
-                number: 8080
+                number: 80
