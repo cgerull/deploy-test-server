@@ -7,10 +7,22 @@ services:
       - MARIADB_ROOT_PASSWORD=P@ssW0rd
       - MARIADB_USER=testserver
       - MARIADB_PASSWORD=my_cool_secret
+    ports:
+      - 3306:3306
     volumes:
       - ./data/db:/var/lib/mysql
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-mariadb
   redis: 
     image: redis:alpine3.15
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-redis
   web:
     image: cgerull/testserver:latest
     ports:
@@ -18,6 +30,11 @@ services:
     environment:
       - SECRET_KEY=DockerComposeSecret
       - REDIS_SERVER=redis
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-testserver
     depends_on:
       - redis
       - db
