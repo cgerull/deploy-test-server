@@ -20,7 +20,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
-  ingressClassName: nginx
+  className: nginx
   hosts:
     - host: testserver.dev.gerull.nl
       paths:
