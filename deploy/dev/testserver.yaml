@@ -18,10 +18,11 @@ env:
 ingress:
   enabled: true
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
+  ingressClassName: nginx
   hosts:
-    - host: testserver-dev.local
+    - host: testserver.dev.gerull.nl
       paths:
         - path: /
           pathType: Prefix
