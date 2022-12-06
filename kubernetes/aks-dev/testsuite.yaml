@@ -108,10 +108,11 @@ metadata:
     app.kubernetes.io/version: "0.9.7"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  ingressClassName: nginx
   rules:
-    - host: "testserver-dev.local"
+    - host: "testserver.dev.gerull.nl"
       http:
         paths:
           - path: /
