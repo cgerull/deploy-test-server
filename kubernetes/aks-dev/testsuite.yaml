@@ -77,7 +77,7 @@ spec:
                   name: redis
                   key: redis-password
             - name: REDIS_SERVER
-              value: redis-headless
+              value: redis-master
           ports:
             - containerPort: 8080
               name: http
