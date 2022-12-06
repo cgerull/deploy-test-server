@@ -72,7 +72,10 @@ spec:
             - name: ENV
               value: Dev
             - name: REDIS_PASSWORD
-              value: cEPguKSbSp
+              valueFrom:
+                secretKeyRef:
+                  name: redis
+                  key: redis-password
             - name: REDIS_SERVER
               value: redis-headless
           ports:
