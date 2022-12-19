@@ -8,7 +8,7 @@ services:
       - MARIADB_USER=testserver
       - MARIADB_PASSWORD=my_cool_secret
     volumes:
-      - mysql/db:/var/lib/mysql
+      - mysql-db:/var/lib/mysql
     networks:
       - testsuite
   redis: 
