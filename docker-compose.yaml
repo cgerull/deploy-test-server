@@ -27,7 +27,5 @@ services:
     depends_on:
       - redis
       - db
- networks:
-   testsuite:
-
-   
+networks:
+  testsuite:
