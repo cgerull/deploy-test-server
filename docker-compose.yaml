@@ -28,6 +28,6 @@ services:
       - redis
       - db
  networks:
-   - testsuite
+   testsuite:
 
    
