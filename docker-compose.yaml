@@ -16,14 +16,13 @@ services:
     networks:
       - testsuite
   web:
-    image: cgerull/testserver:latest
+    image: cgerull/testserver:0.9.10
     ports:
       - "4080:8080"
     environment:
       - SECRET_KEY=DockerComposeSecret
       - REDIS_SERVER=redis
       - ENV=Development
-      - VERSION=latest
     networks:
       - testsuite
     depends_on:
