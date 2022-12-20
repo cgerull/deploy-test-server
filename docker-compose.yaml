@@ -22,6 +22,8 @@ services:
     environment:
       - SECRET_KEY=DockerComposeSecret
       - REDIS_SERVER=redis
+      - ENV=Development
+      - VERSION=latest
     networks:
       - testsuite
     depends_on:
