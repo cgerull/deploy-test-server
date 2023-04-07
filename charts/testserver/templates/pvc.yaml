@@ -1,6 +1,6 @@
 {{- if .Values.persistence.enabled }}
 {{- $labels :=  include "testserver.labels" . -}}
-{{- range .Values.volumes }}
+{{- range .Values.persistence.volumes }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
