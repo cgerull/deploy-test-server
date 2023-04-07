@@ -1,7 +1,7 @@
 # Dev local configuaration
 #
 image:
-  tag: "0.9.8"
+  tag: "0.9.11"
 
 replicaCount: 1
 
