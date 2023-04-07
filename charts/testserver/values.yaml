@@ -88,13 +88,21 @@ resources:
     cpu: 50m
     memory: 48Mi
 
-volumes:
-  - name: testserver-data
-    claimName: testserver-data
-    storageClass: ""
-    size: 1G
-    accessMode: ReadWriteMany
+persistence:
+  enabled: false
+  snapshots: false
+  volumes:
+    - name: testserver-data
+      claimName: testserver-data
+      storageClass: ""
+      size: 1G
+      accessMode: ReadWriteMany
 
+localSecrets:
+  enabled: false
+  secrets:
+    - name: testsecret
+      secretName: my_secret
 # -- Horizontal scaling settings.
 autoscaling:
   enabled: false
@@ -111,10 +119,6 @@ affinity: {}
 
 database:
   enabled: false
-
-persistence:
-  enabled: false
-  snapshots: false
 
 tests:
   enabled: false
