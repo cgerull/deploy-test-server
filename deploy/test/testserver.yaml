@@ -1,7 +1,7 @@
 # Test configuaration with Redis and Vault
 #
 image:
-  tag: 0.9.8
+  tag: 0.9.13
   
 replicaCount: 1
 
@@ -21,13 +21,17 @@ env:
     value: "/run/secrets/testsecret"
   - name: ENV
     value: 'Test'
+  - name: REDIS_PASSWORD
+    value: cEPguKSbSp
+  - name: REDIS_SERVER
+    value: redis
 
 ingress:
   enabled: true
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: testserver-tst.mydomain.net
+    - host: testserver.tst.local
       paths:
         - path: /
           pathType: Prefix

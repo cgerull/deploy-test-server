@@ -1,7 +1,7 @@
 # Dev configuaration
 #
 image:
-  tag: 0.9.8
+  tag: 0.9.13
   
 replicaCount: 1
 
@@ -18,9 +18,9 @@ env:
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    # traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
-  className: nginx
+    # nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
+  className: traefik
   hosts:
     - host: testserver.dev.gerull.nl
       paths:
