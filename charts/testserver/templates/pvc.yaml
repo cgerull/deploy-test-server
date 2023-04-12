@@ -15,7 +15,7 @@ spec:
   resources:
     requests:
       storage: {{ .size | quote }}
-      storageClassName: "{{ .storageClass }}"
+  storageClassName: "{{ .storageClass }}"
 ---
 {{- end }}
 {{- end -}}

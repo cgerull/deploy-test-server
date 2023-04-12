@@ -95,7 +95,7 @@ persistence:
     - name: testserver-data
       claimName: testserver-data
       storageClass: ""
-      size: 1G
+      size: 1Gi
       accessMode: ReadWriteMany
 
 localSecrets:
