@@ -2,4 +2,5 @@
 .vscode/
 data/
 scrap/
-
+*.log
+taurus/202*

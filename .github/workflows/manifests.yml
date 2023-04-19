@@ -17,4 +17,4 @@ jobs:
       - name: Check out code
         uses: actions/checkout@master
       - name: Generate kubernets manifests
-        run: bash ./.ci-scripts/build/generate-manifests.sh all
+        run: bash ./.ci-scripts/build/generate-manifests.sh testserver all
