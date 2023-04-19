@@ -44,8 +44,8 @@ autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 3
-  targetCPUUtilizationPercentage: 60
-  targetMemoryUtilizationPercentage: 70
+  targetCPUUtilizationPercentage: 70
+  # targetMemoryUtilizationPercentage: 80
 
 # -- Expose standard Http port
 service:
@@ -87,11 +87,11 @@ readinessProbe:
 # -- Minimun values, increase in downstream configs.
 resources:
   limits:
-    cpu: 75m
-    memory: 64Mi
+    cpu: 100m
+    memory: 128Mi
   requests:
-    cpu: 50m
-    memory: 48Mi
+    cpu: 20m
+    memory: 72Mi
 
 persistence:
   enabled: false

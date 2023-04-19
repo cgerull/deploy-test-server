@@ -10,8 +10,8 @@ autoscaling:
   enabled: true
   minReplicas: 1
   maxReplicas: 3
-  targetCPUUtilizationPercentage: 60
-  targetMemoryUtilizationPercentage: 70
+  targetCPUUtilizationPercentage: 50
+  # targetMemoryUtilizationPercentage: 70
 
 service:
   port: 80
@@ -42,13 +42,13 @@ ingress:
                 number: 80
 
 persistence:
-  enabled: true
+  enabled: false
   snapshots: false
   volumes:
     - name: testserver-data
       mountPath: /data
       claimName: testserver-data
-      storageClass: "local"
+      storageClass: "local-path"
       size: 512M
       accessMode: ReadWriteMany
 
@@ -56,5 +56,5 @@ localSecrets:
   enabled: true
   secrets:
     - name: testsecret
-      secretName: my_secret
+      secretName: testserver
       mountPath: /run/secret/my-secret
