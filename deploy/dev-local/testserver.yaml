@@ -1,9 +1,17 @@
 # Dev local configuaration
 #
 image:
-  tag: "0.9.11"
+  tag: "0.9.13"
 
 replicaCount: 1
+
+# -- Horizontal scaling settings.
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  # targetMemoryUtilizationPercentage: 70
 
 service:
   port: 80
@@ -12,11 +20,11 @@ env:
   - name: SECRET_KEY
     value: DevHelmChartSecret
   - name: ENV
-    value: "k3d-dev environment"
+    value: "dev-local"
 
-volumeMounts:
-  - mountPath: /run/secret/my-secret
-    name: testssecret
+# volumeMounts:
+#   - mountPath: /run/secret/my-secret
+#     name: testsecret
 
 ingress:
   enabled: true
@@ -38,8 +46,9 @@ persistence:
   snapshots: false
   volumes:
     - name: testserver-data
+      mountPath: /data
       claimName: testserver-data
-      storageClass: "local"
+      storageClass: "local-path"
       size: 512M
       accessMode: ReadWriteMany
 
@@ -47,5 +56,5 @@ localSecrets:
   enabled: true
   secrets:
     - name: testsecret
-      secretName: my_secret
+      secretName: testserver
       mountPath: /run/secret/my-secret
