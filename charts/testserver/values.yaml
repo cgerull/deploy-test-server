@@ -39,6 +39,14 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
+# -- Horizontal scaling settings.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 70
+
 # -- Expose standard Http port
 service:
   type: ClusterIP
@@ -65,9 +73,6 @@ env:
   - name: REDIS_PASSWORD
     value: None
 
-volumeMounts:
-  - mountPath: /var/testserver
-    name: testserver-data
 
 livenessProbe:
   httpGet:
@@ -82,8 +87,8 @@ readinessProbe:
 # -- Minimun values, increase in downstream configs.
 resources:
   limits:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 75m
+    memory: 64Mi
   requests:
     cpu: 50m
     memory: 48Mi
@@ -93,6 +98,7 @@ persistence:
   snapshots: false
   volumes:
     - name: testserver-data
+      mountPath: /data
       claimName: testserver-data
       storageClass: ""
       size: 1Gi
@@ -102,14 +108,8 @@ localSecrets:
   enabled: false
   secrets:
     - name: testsecret
+      mountPath: /run/secret/my-secret
       secretName: my_secret
-# -- Horizontal scaling settings.
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
