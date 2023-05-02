@@ -1,9 +1,7 @@
 # Dev local configuaration
 #
 image:
-  tag: "0.9.13"
-
-replicaCount: 1
+  tag: "0.9.50"
 
 # -- Horizontal scaling settings.
 autoscaling:
@@ -12,6 +10,14 @@ autoscaling:
   maxReplicas: 3
   targetCPUUtilizationPercentage: 50
   # targetMemoryUtilizationPercentage: 70
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
   port: 80

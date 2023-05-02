@@ -9,7 +9,7 @@ CI_PROJECT_NAME := testserver
 CI_PIPELINE_ID := ''
 
 # Variables from .gitlab-ci.yml
-APP_VERSION := 0.9.13
+APP_VERSION := 0.9.50
 # When we are using pipeline ID switch the next 2 lines.
 # VERSION := $(APP_VERSION)-$(CI_PIPELINE_ID)
 VERSION := $(APP_VERSION)
@@ -23,7 +23,7 @@ IMAGE_NAME := $(IMAGE_REGISTRY_PATH)/$(PROJECT_NAME)
 # Make variables
 CHARTS_PATH := charts
 KUBE_DIR := kubernetes
-ENV := dev
+ENV := dev-local
 
 # default target, when make executed without arguments
 help:           	## Show this help.
@@ -105,14 +105,14 @@ package-chart:lint	## Create helm package
 
 push-chart:package-chart push-image
 	helm push $(CHARTMUSEUM)
-	# helm --debug nexus-push nexus-helm3 packages/*.tgz 
+	# helm --debug nexus-push nexus-helm3 packages/*.tgz
 
 docs:			## Generate README.md
 	helm-docs $(CHARTS_PATH)/$(CHART_NAME)
 
 # Testing *************************************************************
 chart-dry-run:manifest	## Perform a kubernetes dry-run; Shell needs to have access to clustermake clea
-	kubectl apply -f $(KUBE_DIR)/$(CHART_NAME).yaml --dry-run=client 
+	kubectl apply -f $(KUBE_DIR)/$(CHART_NAME).yaml --dry-run=client
 
 chart-get-current:	## Retrieve current manifests from cluster. Require cluster connection.
 	@if [ ! -d $(KUBE_DIR)/current ]; then \
@@ -158,4 +158,3 @@ clean:			## Clean all artefacts
 all: push-chart gen-docs   ## Run all commands
 
 .PHONY: push-image chart lint package-chart push-chart docs clean dry-run
-
