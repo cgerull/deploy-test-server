@@ -1,5 +1,8 @@
 .venv/
 .vscode/
 data/
+taurus/20*/
+**/*.log
+tmp/
+vault/
 scrap/
-

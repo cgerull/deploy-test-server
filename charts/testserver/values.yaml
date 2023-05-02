@@ -104,6 +104,17 @@ persistence:
       size: 1Gi
       accessMode: ReadWriteMany
 
+tmpfs:
+  enabled: true
+  volumes:
+    - name: tmp
+      mountPath: /tmp
+      # If kubernetes support it you run tmpfs in memory
+      # emptyDir:
+      #   medium: memory
+    - name: instance
+      mountPath: /home/web/instance
+
 localSecrets:
   enabled: false
   secrets:
