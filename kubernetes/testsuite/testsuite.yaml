@@ -509,11 +509,11 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 spec:
   accessModes:
-    - "ReadWriteMany"
+    - "ReadWriteOnce"
   resources:
     requests:
       storage: "1Gi"
-  storageClassName: ""
+  storageClassName: "local-path"
 ---
 # Source: testserver/templates/service.yaml
 apiVersion: v1
@@ -669,7 +669,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 type: Opaque
 data:
-  redis-password: "dk9WWkhLd2VlZA=="
+  redis-password: "R0ZZTEJMSjhrZA=="
 ---
 # Source: redis/templates/configmap.yaml
 apiVersion: v1
@@ -1000,7 +1000,7 @@ spec:
         checksum/configmap: c9ea59622b4758858180846f573e2e84ed893edeab761657788a06fdefee1596
         checksum/health: 2034ac229f166fd0cf0d64dc352b6f4a82e9e27da6a9cc60aeb4c80e57bc5e10
         checksum/scripts: fa3a0e87ab683957987b60de1ce25951549616218ba1e9049b6a6618bde9878b
-        checksum/secret: 86b09b1682f1d6dcdc79f5c898a18f5c488293549282b841fb9b1335b7f2658e
+        checksum/secret: 8682998f1c98e31dd8108c7e007fb4551030e5470ebed4c017d95d454e3bb408
     spec:
       
       securityContext:
@@ -1155,7 +1155,7 @@ spec:
         checksum/configmap: c9ea59622b4758858180846f573e2e84ed893edeab761657788a06fdefee1596
         checksum/health: 2034ac229f166fd0cf0d64dc352b6f4a82e9e27da6a9cc60aeb4c80e57bc5e10
         checksum/scripts: fa3a0e87ab683957987b60de1ce25951549616218ba1e9049b6a6618bde9878b
-        checksum/secret: ea95abf6dc879db91e2046748ea54d80d1542afb16c02f0b6bb1ce788979fec3
+        checksum/secret: a9e4ec4d9597ee263f50485c885cfcc46ccbd191c03295311d6728e84ce6c2fb
     spec:
       
       securityContext:
