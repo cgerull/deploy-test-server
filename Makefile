@@ -9,7 +9,7 @@ CI_PROJECT_NAME := testserver
 CI_PIPELINE_ID := ''
 
 # Variables from .gitlab-ci.yml
-APP_VERSION := 0.9.50
+APP_VERSION := 0.9.14
 # When we are using pipeline ID switch the next 2 lines.
 # VERSION := $(APP_VERSION)-$(CI_PIPELINE_ID)
 VERSION := $(APP_VERSION)
@@ -79,7 +79,7 @@ chart:			## Configure and build helm chart
 	# echo "Set chart.yaml information."
 	@sed -ri "s/^(name:).*$$/\1 ${APP_NAME}/g" $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml;
 	@sed -ri 's/^(appVersion:).*$$/\1 ${VERSION}/g' $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml;
-	@sed -ri 's!^(version:).*$$!\1 '${VERSION}'!g' $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml
+	# @sed -ri 's!^(version:).*$$!\1 '${VERSION}'!g' $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml
 	@cat $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml
 
 lint:chart		## Helm lint chart
