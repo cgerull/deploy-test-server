@@ -19,12 +19,16 @@ fi
 
 CHART_DIR="charts"
 DEPLOY_VALUES="deploy"
-DEPLOY_VALUES_PATH=${DEPLOY_VALUES}
+# DEPLOY_VALUES_PATH=${DEPLOY_VALUES}
 MANIFESTS="kubernetes"
-MANIFESTS_PATH=${MANIFESTS}
-TEST_MANIFESTS="true"
+# MANIFESTS_PATH=${MANIFESTS}
+# TEST_MANIFESTS="true"
 CHART="$1"
 ENVIRONMENT="$2"
+
+# TODO: Test if environment exist function
+
+# TODO:  After generation push-back manifests
 
 function generate_manifests() {
     # Takes the target environment as argument
