@@ -19,6 +19,16 @@ services:
       - "6379:6379"
     networks:
       - testsuite
+  minio:
+    image: 'bitnami/minio:latest'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
+    networks:
+      - testsuite
   web:
     image: cgerull/testserver:latest
     labels:

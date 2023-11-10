@@ -14,9 +14,7 @@ spec:
   sourceRepos:
   - '*'
   destinations:
-  - namespace: testsuite
-    server: https://k3d-dev.local
+  - namespace: '*'
+    server: '*'
   orphanedResources:
     warn: true
-  sourceRepos:
-  - https://github.com/cgerull/deploy-test-server
