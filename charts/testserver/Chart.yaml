@@ -6,4 +6,4 @@ description: |
   Helm charts to test various CI/CD, orchestration and deployment methods.
 type: application
 version: 0.9.51
-appVersion: 0.9.13
+appVersion: 0.9.14

@@ -8,7 +8,7 @@ items:
   spec:
     project: default
     destination:
-      namespace: dev-environment
+      namespace: testserver
       server: https://kubernetes.default.svc
     source:
       path: kubernetes/dev
