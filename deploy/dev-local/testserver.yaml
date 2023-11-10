@@ -1,7 +1,7 @@
 # Dev local configuaration
 #
 image:
-  tag: "0.9.14"
+  tag: "0.9.70"
 
 # -- Horizontal scaling settings.
 autoscaling:
@@ -10,6 +10,14 @@ autoscaling:
   maxReplicas: 3
   targetCPUUtilizationPercentage: 50
   # targetMemoryUtilizationPercentage: 70
+
+upgradeStrategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: 1
+
+# Replicaset history to keep, default = 10
+revisionHistoryLimit: 2
 
 securityContext:
   capabilities:

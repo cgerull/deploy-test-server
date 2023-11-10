@@ -9,7 +9,7 @@ CI_PROJECT_NAME := testserver
 CI_PIPELINE_ID := ''
 
 # Variables from .gitlab-ci.yml
-APP_VERSION := 0.9.14
+APP_VERSION := 0.9.70
 # When we are using pipeline ID switch the next 2 lines.
 # VERSION := $(APP_VERSION)-$(CI_PIPELINE_ID)
 VERSION := $(APP_VERSION)

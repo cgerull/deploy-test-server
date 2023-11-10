@@ -8,9 +8,16 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  {{- with .Values.upgradeStrategy }}
+  strategy:
+  {{- toYaml . | nindent 6 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "testserver.selectorLabels" . | nindent 6 }}
+  {{- with .Values.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ . }}
+  {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -27,6 +34,7 @@ spec:
       serviceAccountName: {{ include "testserver.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
