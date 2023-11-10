@@ -8,7 +8,7 @@ metadata:
     helm.sh/chart: testserver-0.9.51
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "0.9.70"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: testserver/templates/service.yaml
@@ -20,7 +20,7 @@ metadata:
     helm.sh/chart: testserver-0.9.51
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "0.9.70"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -42,13 +42,18 @@ metadata:
     helm.sh/chart: testserver-0.9.51
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "0.9.70"
     app.kubernetes.io/managed-by: Helm
 spec:
+  strategy:
+      rollingUpdate:
+        maxUnavailable: 1
+      type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/name: testserver
       app.kubernetes.io/instance: testserver
+  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
@@ -58,6 +63,7 @@ spec:
       serviceAccountName: testserver
       securityContext:
         {}
+
       containers:
         - name: testserver
           securityContext:
@@ -67,7 +73,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: "cgerull/testserver:0.9.14"
+          image: "cgerull/testserver:0.9.70"
           imagePullPolicy: IfNotPresent
           env:
             - name: SECRET_KEY
@@ -119,7 +125,7 @@ metadata:
     helm.sh/chart: testserver-0.9.51
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "0.9.70"
     app.kubernetes.io/managed-by: Helm
 spec:
   scaleTargetRef:
@@ -145,7 +151,7 @@ metadata:
     helm.sh/chart: testserver-0.9.51
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: testserver
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "0.9.70"
     app.kubernetes.io/managed-by: Helm
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
