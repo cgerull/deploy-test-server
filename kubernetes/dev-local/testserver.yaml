@@ -46,9 +46,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 spec:
   strategy:
-      rollingUpdate:
-        maxUnavailable: 1
-      type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/name: testserver
@@ -154,10 +154,15 @@ metadata:
     app.kubernetes.io/version: "0.9.70"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
+  tls:
+    - hosts:
+        - "testserver.dev.gerull.nl"
+      secretName: testserver-tls
   rules:
-    - host: "testserver.dev.local"
+    - host: "testserver.dev.gerull.nl"
       http:
         paths:
           - path: /
@@ -167,3 +172,49 @@ spec:
                 name: testserver
                 port:
                   number: 80
+---
+# Source: testserver/templates/certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: testserver
+  labels:
+    helm.sh/chart: testserver-0.9.51
+    app.kubernetes.io/name: testserver
+    app.kubernetes.io/instance: testserver
+    app.kubernetes.io/version: "0.9.70"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  secretName: testserver-tls
+  issuerRef:
+    kind: Issuer
+    name: testserver
+  dnsNames:
+    - '*.dev.gerull.nl'
+    - 'dev.gerull.nl'
+---
+# Source: testserver/templates/issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: testserver
+  labels:
+    helm.sh/chart: testserver-0.9.51
+    app.kubernetes.io/name: testserver
+    app.kubernetes.io/instance: testserver
+    app.kubernetes.io/version: "0.9.70"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: cgerull@gmail.com
+    privateKeySecretRef:
+      name: testserver-issuer-key
+    solvers:
+    - dns01:
+        acmeDNS:
+          accountSecretRef:
+            key: acmedns.json
+            name: acme-dns-account
+          
+          host: acme-staging-v02.api.letsencrypt.org

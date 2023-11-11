@@ -1,0 +1,17 @@
+{{- if .Values.certificates.enabled -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "testserver.fullname" . }}
+  labels:
+    {{- include "testserver.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "testserver.fullname" . }}-tls
+  issuerRef:
+    kind: Issuer
+    name: {{ include "testserver.fullname" . }}
+  {{- with .Values.certificates.dnsNames }}
+  dnsNames:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

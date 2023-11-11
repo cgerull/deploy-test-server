@@ -10,7 +10,7 @@ spec:
   {{- end }}
   {{- with .Values.upgradeStrategy }}
   strategy:
-  {{- toYaml . | nindent 6 }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
   selector:
     matchLabels:

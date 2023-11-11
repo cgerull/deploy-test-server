@@ -1,0 +1,24 @@
+{{- if .Values.certificates.enabled -}}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "testserver.fullname" . }}
+  labels:
+    {{- include "testserver.labels" . | nindent 4 }}
+spec:
+  acme:
+    server: {{ .Values.certificates.acmeServer }}
+    email: {{ .Values.certificates.email }}
+    privateKeySecretRef:
+      name: {{ include "testserver.fullname" . }}-issuer-key
+    solvers:
+    - dns01:
+        acmeDNS:
+          {{- with .Values.certificates.dns01.accountSecretRef }}
+          accountSecretRef:
+            key: {{ .key }}
+            name: {{ .name }}
+          {{/* {{- toYaml . | nindent 2 }} */}}
+          {{- end }}
+          host: {{ .Values.certificates.dns01.host }}
+{{- end }}

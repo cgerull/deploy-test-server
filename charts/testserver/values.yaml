@@ -74,6 +74,19 @@ ingress:
   traefikStripPrefix: ''
   tls: []
 
+# -- Certificate settings
+certificates:
+  enabled: false
+  email: name@server.tld
+  acmeServer: https://acme-staging-v02.api.letsencrypt.org/directory
+  dnsNames:
+    - '*.dev.gerull.nl'
+  dns01:
+    host: acme-staging-v02.api.letsencrypt.org
+    accountSecretRef:
+      key: acmedns.json
+      name: acme-dns-account
+
 # -- Basic application settings, see test-server README for full details.
 env:
   - name: SECRET_KEY

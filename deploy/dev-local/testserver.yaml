@@ -1,4 +1,5 @@
 # Dev local configuaration
+# Should run on minikube with nginx ingress
 #
 image:
   tag: "0.9.70"
@@ -12,9 +13,9 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 70
 
 upgradeStrategy:
-   type: RollingUpdate
-   rollingUpdate:
-     maxUnavailable: 1
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
 
 # Replicaset history to keep, default = 10
 revisionHistoryLimit: 2
@@ -43,9 +44,13 @@ env:
 ingress:
   enabled: true
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    # traefik.ingress.kubernetes.io/router.entrypoints: web
+    # cert-manager.io/issuer: testserver
+    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
   hosts:
-    - host: testserver.dev.local
+    - host: testserver.dev.gerull.nl
       paths:
         - path: /
           pathType: Prefix
@@ -54,6 +59,23 @@ ingress:
               name: testserver
               port:
                 number: 80
+  tls:
+    - hosts:
+      - testserver.dev.gerull.nl
+      secretName: testserver-tls
+
+certificates:
+  enabled: true
+  email: cgerull@gmail.com
+  acmeServer: https://acme-staging-v02.api.letsencrypt.org/directory
+  dnsNames:
+    - '*.dev.gerull.nl'
+    - 'dev.gerull.nl'
+  dns01:
+    host: acme-staging-v02.api.letsencrypt.org
+    accountSecretRef:
+      key: acmedns.json
+      name: acme-dns-account
 
 persistence:
   enabled: false
