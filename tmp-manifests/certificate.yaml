@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: testserver-selfsigned-crt
+spec:
+  secretName: tls-secret
+  duration: 170000h
+  renewBefore: 72h
+  issuerRef:
+    kind: Issuer
+    name: testserver-selfsigned
+  commonName: "dev.local"
+  isCA: true
+  dnsNames:
+  - "dev.local"
