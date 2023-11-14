@@ -1,0 +1,184 @@
+---
+name: Kubernetes
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/generate_jobs.rb"
+      - ".github/workflows/kubernetes.yml"
+      - "helm-*/**"
+      - "helm/**"
+      - "kubernetes/**"
+
+env:
+  HELM_DOCS_VERSION: 1.5.0
+
+jobs:
+  helm-chart:
+    runs-on: ubuntu-latest
+    outputs:
+      changes_pushed: ${{ steps.auto-commit-action.outputs.changes_detected }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: "${{ secrets.REPO_TOKEN }}"
+      - name: Install yq
+        uses: chrisdickinson/setup-yq@latest
+        with:
+          yq-version: v4.9.6
+      - name: Install helm-docs
+        run: |
+          wget https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz -O /tmp/helm-docs.tar.gz
+          tar zxvf /tmp/helm-docs.tar.gz -C /tmp helm-docs
+      - name: Generate chart README
+        run: |
+          for CHART in $(find helm/charts* -mindepth 1 -maxdepth 1 -type d); do
+            pushd $CHART
+            sed -i -e "s/^    version:.*/    version: $(yq e .version Chart.yaml | tr -d '\n')/g" values.yaml # Update global.chart.version to match version in Chart.yaml
+            /tmp/helm-docs # Update chart README
+            popd
+          done
+        env:
+          GITHUB_TOKEN: "${{ secrets.REPO_TOKEN }}"
+      - id: auto-commit-action
+        name: Commit back updated files
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Update Helm chart"
+          branch: ${{ github.head_ref }}
+
+  generate-jobs:
+    runs-on: ubuntu-latest
+    outputs:
+      namespaces: ${{ steps.generate-jobs.outputs.namespaces }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+      - id: generate-jobs
+        name: Generate Jobs
+        run: |
+          namespaces="$(.github/workflows/generate_jobs.rb)"
+          jq . <<<"$namespaces" # sanity check / debugging aid
+          echo "::set-output name=namespaces::$namespaces"
+
+  helmfile-template:
+    needs: [generate-jobs, helm-chart]
+    runs-on: ubuntu-latest
+    if: needs.helm-chart.outputs.changes_pushed == 'false' # skip this job if we pushed new changes earlier
+    strategy:
+      matrix:
+        namespace: ${{fromJson(needs.generate-jobs.outputs.namespaces)}}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Setup helmfile
+        uses: mamezou-tech/setup-helmfile@v0.8.0
+      - name: Generate Kubernetes manifests
+        run: |
+          make helmfile-template envs=${{ matrix.namespace }} output_dir=kubernetes
+        env:
+          GITHUB_TOKEN: "${{ secrets.REPO_TOKEN }}"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.namespace }}
+          path: kubernetes/${{ matrix.namespace }}
+
+  commit-helmfile-template-changes:
+    needs: [helmfile-template]
+    runs-on: ubuntu-latest
+    outputs:
+      changes_pushed: ${{ steps.auto-commit-action.outputs.changes_detected }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: "${{ secrets.REPO_TOKEN }}"
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: kubernetes
+      - id: auto-commit-action
+        name: Commit back updated files
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Generated Kubernetes manifests using Helmfile from commit: ${{ github.sha }}"
+          branch: ${{ github.head_ref }}
+
+  kube-linter:
+    continue-on-error: true
+    needs: [generate-jobs, commit-helmfile-template-changes]
+    runs-on: ubuntu-latest
+    if: needs.commit-helmfile-template-changes.outputs.changes_pushed == 'false' # skip this job if we pushed new changes earlier
+    strategy:
+      matrix:
+        namespace: ${{fromJson(needs.generate-jobs.outputs.namespaces)}}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Scan repo with kube-linter
+        continue-on-error: true
+        uses: stackrox/kube-linter-action@v1.0.2
+        with:
+          directory: kubernetes/${{ matrix.namespace }}
+
+  kube-score:
+    continue-on-error: true
+    needs: [generate-jobs, commit-helmfile-template-changes]
+    runs-on: ubuntu-latest
+    if: needs.commit-helmfile-template-changes.outputs.changes_pushed == 'false' # skip this job if we pushed new changes earlier
+    strategy:
+      matrix:
+        namespace: ${{fromJson(needs.generate-jobs.outputs.namespaces)}}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: kube-score check
+        continue-on-error: true
+        uses: piraces/kube-score-ga@v0.1.2
+        with:
+          manifests-folders: kubernetes/${{ matrix.namespace }}
+
+  kubeval:
+    continue-on-error: true
+    needs: [generate-jobs, commit-helmfile-template-changes]
+    runs-on: ubuntu-latest
+    if: needs.commit-helmfile-template-changes.outputs.changes_pushed == 'false' # skip this job if we pushed new changes earlier
+    strategy:
+      matrix:
+        namespace: ${{fromJson(needs.generate-jobs.outputs.namespaces)}}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: test
+        continue-on-error: true
+        uses: instrumenta/kubeval-action@master
+        with:
+          files: kubernetes/${{ matrix.namespace }}
+
+  yamllint:
+    continue-on-error: true
+    needs: [generate-jobs, commit-helmfile-template-changes]
+    runs-on: ubuntu-latest
+    if: needs.commit-helmfile-template-changes.outputs.changes_pushed == 'false' # skip this job if we pushed new changes earlier
+    strategy:
+      matrix:
+        namespace: ${{fromJson(needs.generate-jobs.outputs.namespaces)}}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: test
+        continue-on-error: true
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: kubernetes/${{ matrix.namespace }}/*.yaml

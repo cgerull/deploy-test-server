@@ -1,0 +1,7 @@
+apiVersion: v2
+name: testserver
+description: A simple test server for container deployment and inter-connection testing.
+
+type: application
+version: 0.2.0
+appVersion: "0.9.7"
