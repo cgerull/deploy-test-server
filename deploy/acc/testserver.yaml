@@ -1,0 +1,26 @@
+# Acc configuaration
+image:
+  tag: 0.9.13
+  
+replicaCount: 1
+
+env:
+  - name: SECRET_KEY
+    value: TestAccHelmChartSecret
+  - name: FLASK_ENV
+    value: 'Acc'
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteMany
+  data:
+    claim: testserver
+    size: "1Gi"
+    storageClassName: trident-nfs-n00
+
+
+database:
+  enabled: true
+  username: testserver
+  password: testserver
+  url: "lnx3203vm.internal.asp4all.nl"

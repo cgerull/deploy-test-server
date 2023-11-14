@@ -1,0 +1,74 @@
+# Dev local configuaration
+#
+image:
+  tag: "1.0.0"
+
+# -- Horizontal scaling settings.
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  # targetMemoryUtilizationPercentage: 70
+
+upgradeStrategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: 1
+
+# Replicaset history to keep, default = 10
+revisionHistoryLimit: 2
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  port: 80
+
+env:
+  - name: SECRET_KEY
+    value: DevHelmChartSecret
+  - name: ENV
+    value: "dev-local"
+
+# volumeMounts:
+#   - mountPath: /run/secret/my-secret
+#     name: testsecret
+
+ingress:
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: testserver.dev.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: testserver
+              port:
+                number: 80
+
+persistence:
+  enabled: false
+  snapshots: false
+  volumes:
+    - name: testserver-data
+      mountPath: /data
+      claimName: testserver-data
+      storageClass: "local-path"
+      size: 512M
+      accessMode: ReadWriteMany
+
+localSecrets:
+  enabled: true
+  secrets:
+    - name: testsecret
+      secretName: testserver
+      mountPath: /run/secret/my-secret

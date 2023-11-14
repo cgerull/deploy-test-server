@@ -1,5 +1,5 @@
 version: "3.9"
-   
+
 services:
   db:
     image: mariadb:10.7-focal
@@ -7,13 +7,70 @@ services:
       - MARIADB_ROOT_PASSWORD=P@ssW0rd
       - MARIADB_USER=testserver
       - MARIADB_PASSWORD=my_cool_secret
+    ports:
+      - "3306:3306"
     volumes:
       - ./data/db:/var/lib/mysql
+    networks:
+      - testsuite
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-mariadb
+  redis: 
+    image: redis:alpine3.15
+    ports:
+      - "6379:6379"
+    networks:
+      - testsuite
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-redis
+  minio:
+    image: 'bitnami/minio:latest'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
+    networks:
+      - testsuite
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-minio
   web:
     image: cgerull/testserver:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testserver.rule=Host(`testserver.dieren.gerull.nl`)"
+      - "traefik.http.services.testserver.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik-net"
     ports:
-      - "8080:8080"
+      - "4080:8080"
     environment:
       - SECRET_KEY=DockerComposeSecret
+      - REDIS_SERVER=redis
+      - ENV=Development
+    networks:
+      - testsuite
+      - traefik-net
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-testserver
     depends_on:
+      - redis
       - db
+networks:
+  testsuite:
+  traefik-net:
+    external: true
+volumes:
+   mysql-db:

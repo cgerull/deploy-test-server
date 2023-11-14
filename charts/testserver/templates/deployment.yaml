@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "testserver.fullname" . }}
+  labels:
+    {{- include "testserver.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- with .Values.upgradeStrategy }}
+  strategy:
+  {{- toYaml . | nindent 6 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "testserver.selectorLabels" . | nindent 6 }}
+  {{- with .Values.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ . }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "testserver.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "testserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          {{- with .Values.env }}
+          env:
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+
+          {{- with .Values.ports }}
+          ports:
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+
+          {{- if or .Values.persistence.enabled .Values.tmpfs.enabled .Values.localSecrets.enabled }}
+          volumeMounts:
+          {{- if .Values.persistence.enabled }}
+          {{- range .Values.persistence.volumes }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.tmpfs.enabled }}
+          {{- range .Values.tmpfs.volumes }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.localSecrets.enabled }}
+          {{- range .Values.localSecrets.secrets }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+          {{- toYaml . | nindent 12  }}
+          {{- end }}
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+      {{- if or .Values.persistence.enabled .Values.tmpfs.enabled  .Values.localSecrets.enabled }}
+      volumes:
+      {{- if .Values.persistence.enabled }}
+      {{- range .Values.persistence.volumes }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .claimName }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.tmpfs.enabled }}
+      {{- range .Values.tmpfs.volumes }}
+        - name: {{ .name }}
+          {{- if .emptyDir }}
+          emptyDir:
+          {{- toYaml .emptyDir | nindent 12 }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.localSecrets.enabled }}
+      {{- range .Values.localSecrets.secrets }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
