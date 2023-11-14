@@ -10,15 +10,25 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql-db:/var/lib/mysql
+      - ./data/db:/var/lib/mysql
     networks:
       - testsuite
-  redis:
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-mariadb
+  redis: 
     image: redis:alpine3.15
     ports:
       - "6379:6379"
     networks:
       - testsuite
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-redis
   minio:
     image: 'bitnami/minio:latest'
     ports:
@@ -29,6 +39,11 @@ services:
       - MINIO_ROOT_PASSWORD=minio-root-password
     networks:
       - testsuite
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-minio
   web:
     image: cgerull/testserver:latest
     labels:
@@ -45,6 +60,11 @@ services:
     networks:
       - testsuite
       - traefik-net
+    logging:
+        driver: syslog
+        options:
+          syslog-address: "tcp://127.0.0.1:1514"
+          tag: test-suite-testserver
     depends_on:
       - redis
       - db
