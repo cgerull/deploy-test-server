@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # upload helm packages
-for entry in $(echo "${CHARTSV3_CONFIG_ACC" | jq -r '.[] | @base64'); do
+for entry in $(echo "${CHARTSV3_CONFIG_ACC}" | jq -r '.[] | @base64'); do
   _jq() {
     echo ${entry} | base64 --decode | jq -r ${1}
   }

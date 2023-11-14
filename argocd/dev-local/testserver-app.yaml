@@ -8,12 +8,12 @@ items:
   spec:
     project: default
     destination:
-      namespace: dev-local
+      namespace: testserver
       server: https://kubernetes.default.svc
     source:
       path: kubernetes/dev-local
       repoURL: https://github.com/cgerull/deploy-test-server
-      targetRevision: localtest
+      targetRevision: HEAD
     syncPolicy:
       automated: {}
 kind: List

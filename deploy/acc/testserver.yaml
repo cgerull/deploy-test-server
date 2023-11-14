@@ -1,4 +1,7 @@
 # Acc configuaration
+image:
+  tag: 0.9.13
+  
 replicaCount: 1
 
 env:

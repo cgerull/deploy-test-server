@@ -39,6 +39,24 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
+# -- Horizontal scaling settings.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Upgrade strategy
+# upgradeStrategy:
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxUnavailable: 1
+
+# -- # Replicaset history to keep, default = 10
+revisionHistoryLimit: 2Replicaset history to keep, default = 10
+# revisionHistoryLimit: 2
+
 # -- Expose standard Http port
 service:
   type: ClusterIP
@@ -65,9 +83,6 @@ env:
   - name: REDIS_PASSWORD
     value: None
 
-volumeMounts:
-  - mountPath: /var/testserver
-    name: testserver-data
 
 livenessProbe:
   httpGet:
@@ -85,23 +100,37 @@ resources:
     cpu: 100m
     memory: 128Mi
   requests:
-    cpu: 50m
-    memory: 48Mi
+    cpu: 20m
+    memory: 72Mi
 
-volumes:
-  - name: testserver-data
-    claimName: testserver-data
-    storageClass: ""
-    size: 1G
-    accessMode: ReadWriteMany
-
-# -- Horizontal scaling settings.
-autoscaling:
+persistence:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  snapshots: false
+  volumes:
+    - name: testserver-data
+      mountPath: /data
+      claimName: testserver-data
+      storageClass: ""
+      size: 1Gi
+      accessMode: ReadWriteMany
+
+tmpfs:
+  enabled: true
+  volumes:
+    - name: tmp
+      mountPath: /tmp
+      # If kubernetes support it you run tmpfs in memory
+      # emptyDir:
+      #   medium: memory
+    - name: instance
+      mountPath: /home/web/instance
+
+localSecrets:
+  enabled: false
+  secrets:
+    - name: testsecret
+      mountPath: /run/secret/my-secret
+      secretName: my_secret
 
 nodeSelector: {}
 
@@ -111,10 +140,6 @@ affinity: {}
 
 database:
   enabled: false
-
-persistence:
-  enabled: false
-  snapshots: false
 
 tests:
   enabled: false

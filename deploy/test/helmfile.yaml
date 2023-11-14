@@ -26,7 +26,7 @@ releases:
   - name: redis
     namespace: testserver 
     chart: bitnami/redis
-    version: ~16.9
+    version: ~17.9
 
 
 
