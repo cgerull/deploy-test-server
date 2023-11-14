@@ -1,7 +1,7 @@
 # Dev local configuaration
 #
 image:
-  tag: "0.9.70"
+  tag: "1.0.0"
 
 # -- Horizontal scaling settings.
 autoscaling:
