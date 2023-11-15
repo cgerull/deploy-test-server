@@ -13,7 +13,7 @@ items:
     source:
       path: kubernetes/dev-local
       repoURL: https://github.com/cgerull/deploy-test-server
-      targetRevision: HEAD
+      targetRevision: argocd-multi-source
     syncPolicy:
       automated: {}
 kind: List
