@@ -2,8 +2,8 @@
 #
 vault secrets enable -path=local kv-v2
 #
-vault kv put local/mysql/config username="root" password="db-secret-password"
-vault kv put local/testserver/testsecret secret="vaultTestSecret"
+vault kv put local/mysql/config username="<db-user>" password="<db-password>"
+vault kv put local/testserver/testsecret secret="<vaultTestSecret>"
 
 vault policy write testserver - <<EOF
 path "local/data/mysql/config" {
