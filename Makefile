@@ -9,7 +9,7 @@ CI_PROJECT_NAME := testserver
 CI_PIPELINE_ID := ''
 
 # Variables from .gitlab-ci.yml
-APP_VERSION := 0.9.70
+APP_VERSION := 1.0.0
 # When we are using pipeline ID switch the next 2 lines.
 # VERSION := $(APP_VERSION)-$(CI_PIPELINE_ID)
 VERSION := $(APP_VERSION)
@@ -24,6 +24,7 @@ IMAGE_NAME := $(IMAGE_REGISTRY_PATH)/$(PROJECT_NAME)
 CHARTS_PATH := charts
 KUBE_DIR := kubernetes
 ENV := dev-local
+PACKAGE_PATH := packages
 
 # default target, when make executed without arguments
 help:           	## Show this help.
@@ -78,8 +79,8 @@ chart:			## Configure and build helm chart
 	@echo "Saved original Chart.yaml"
 	# echo "Set chart.yaml information."
 	@sed -ri "s/^(name:).*$$/\1 ${APP_NAME}/g" $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml;
-	@sed -ri 's/^(appVersion:).*$$/\1 ${VERSION}/g' $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml;
-	# @sed -ri 's!^(version:).*$$!\1 '${VERSION}'!g' $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml
+	@sed -ri 's/^(appVersion:).*$$/\1 $(VERSION)/g' $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml;
+	@sed -ri 's!^(version:).*$$!\1 '$(VERSION)'!g' $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml
 	@cat $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml
 
 lint:chart		## Helm lint chart
@@ -97,15 +98,23 @@ secret:
 	fi;
 
 package-chart:lint	## Create helm package
-	@if [ ! -d packages ]; then \
-	mkdir -p packages; \
+	@if [ ! -d $(PACKAGE_PATH) ]; then \
+	mkdir -p $(PACKAGE_PATH); \
 	fi;
 	## Build a helm package
-	helm package -d packages $(CHARTS_PATH)/$(CHART_NAME)
+	@helm package -d $(PACKAGE_PATH) $(CHARTS_PATH)/$(CHART_NAME)
 
 push-chart:package-chart push-image
-	helm push $(CHARTMUSEUM)
-	# helm --debug nexus-push nexus-helm3 packages/*.tgz
+	env | sort
+	@if [ -z ${REPOUSER} ] || [ -z ${REPOTOKEN} ]; then \
+		echo "ERROR: No credentials for Helm repo found."; \
+	else \
+	echo "Credentials: ${REPOUSER}:${REPOTOKEN}"; \
+	curl --request POST \
+     --form "chart=@$(PACKAGE_PATH)/$(CHART_NAME)-$(VERSION).tgz" \
+     --user ${REPOUSER}:${REPOTOKEN} \
+     https://gitlab.com/api/v4/projects/34978775/packages/helm/api/stable/charts; \
+	fi;
 
 docs:			## Generate README.md
 	helm-docs $(CHARTS_PATH)/$(CHART_NAME)
