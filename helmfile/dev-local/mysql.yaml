@@ -1,0 +1,17 @@
+## Dev values for mysql
+
+mysql:
+  enabled: false
+
+tunneller:
+  enabled: true
+
+  image:
+    repository: alpine/socat
+    tag: 1.7.4.4
+  # nameOverwrite: mysql-tunnel
+
+  # -- external host
+  tunnel:
+    host: mysql.dev.gerull.nl
+    port: 3306

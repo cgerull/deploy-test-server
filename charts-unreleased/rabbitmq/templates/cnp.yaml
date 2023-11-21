@@ -1,0 +1,30 @@
+{{- if .Values.networkPolicy.create -}}
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: rabbitmq
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: rabbitmq
+  ingress:
+    - fromEndpoints:
+        - {}
+      toPorts:
+        - ports:
+            - port: "5672"
+    {{- range .Values.networkPolicy.cilium.ingress.Endpoints }}
+    - fromEndpoints:
+        {{- range .labels }}
+        - matchLabels:
+{{ toYaml . | indent 12 }}
+        {{- end }}
+      toPorts:
+        - ports:
+        {{- range .ports }}
+            - port: {{ . | quote }}
+        {{- end }}
+    {{- end }}
+  egress:
+    - {}
+{{- end -}}

@@ -157,6 +157,8 @@ clean:			## Clean all artefacts
 	@echo "Cleaned chart README files."
 	@if [ -d $(KUBE_DIR) ]; then rm -rf $(KUBE_DIR); fi
 	@echo "Cleaned kubernetes manifest."
+	@if [ -d $(PACKAGE_PATH) ]; then rm -rf $(PACKAGE_PATH); fi
+	@echo "Cleaned generated packages."
 	@if [ -f $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml.org ]; then \
 	cp $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml.org $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml; \
 	rm $(CHARTS_PATH)/$(CHART_NAME)/Chart.yaml.org; \

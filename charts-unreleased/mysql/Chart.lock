@@ -1,0 +1,9 @@
+dependencies:
+- name: mysql
+  repository: https://charts.bitnami.com/bitnami
+  version: 8.5.8
+- name: socat-tunneller
+  repository: https://isotoma.github.io/charts
+  version: 0.1.5
+digest: sha256:44457387a1e14430572dd00e11a1d0595c488634a032e5df51f96a728b70dd41
+generated: "2021-11-01T15:14:15.651747+01:00"

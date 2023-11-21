@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rabbitmq.fullname" . }}-ui
+  labels:
+    {{- include "rabbitmq.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.serviceUi.type }}
+  ports:
+    - port: {{ .Values.serviceUi.port }}
+      targetPort: {{ .Values.serviceUi.targetPort }}
+      nodePort: {{ .Values.serviceUi.nodePort }}
+      protocol: TCP
+      name: {{ .Values.serviceUi.name }}
+  selector:
+    {{- include "rabbitmq.selectorLabels" . | nindent 4 }}
