@@ -1,0 +1,18 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "cnpg.fullname" . }}-allow-egress-to-minio
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cnpg
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: minio
+          namespaceSelector:
+            matchLabels:
+              customer: dpc-oa
+  policyTypes:
+    - Egress

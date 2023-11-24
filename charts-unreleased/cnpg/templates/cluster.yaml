@@ -1,0 +1,164 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "cnpg.clusterName" .}}
+spec:
+  imageName: harbor.cicd.s15m.nl/ghcr-io-proxy/cloudnative-pg/postgresql:15.3
+  inheritedMetadata:
+    labels:
+      {{- include "cnpg.labels" . | nindent 6 }}
+      egress-frontoffice-policy: allow # Required by database pods to communicate with Kubernetes API
+      tier: vertrouwd
+  postgresql:
+    parameters:
+      shared_buffers: "256MB"
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+  affinity:
+    enablePodAntiAffinity: true
+    podAntiAffinityType: preferred
+    topologyKey: kubernetes.io/hostname
+  instances: {{ default "3" .Values.instances }}
+  #superuserSecret:
+  #  name: superuser-secret
+  logLevel: {{ default "info" .Values.logLevel }}
+  monitoring:
+    customQueriesConfigMap:
+      - key: queries
+        name: cnpg-default-monitoring
+    disableDefaultQueries: false
+    enablePodMonitor: true
+  {{- if and .Values.backups.enabled (not .Values.recovery.enabled) }}
+  backup:
+    {{- if .Values.backups.snapshots.enabled }}
+    volumeSnapshot:
+       className: {{ .Values.backups.snapshots.className }}
+    {{- end }}
+    barmanObjectStore:
+      destinationPath: "s3://{{ .Values.backups.bucket }}-{{ .Release.Namespace }}/"
+      endpointURL: {{ printf "%s://%s:%s" (default "http" .Values.backups.protocol) (default "minio" .Values.backups.endpoint) (default "9000" .Values.backups.port) }}
+      historyTags:
+        backupRetentionPolicy: keep
+      s3Credentials:
+        accessKeyId:
+          key: user
+          name: "{{ .Release.Name }}-{{ .Values.backups.secret }}"
+        secretAccessKey:
+          key: password
+          name: "{{ .Release.Name }}-{{ .Values.backups.secret }}"
+      tags:
+        backupRetentionPolicy: expire
+      {{ if .Values.backups.wal.enabled }}
+      wal:
+        compression: {{ default "gzip" .Values.backups.wal.compression }}
+        maxParallel: {{ default "8" .Values.backups.wal.maxParallel }}
+        {{- if .Values.backups.wal.encryption.enabled }}
+        encryption: {{ default "AES256" .Values.backups.wal.encryption.method }}
+        {{- end }}
+      {{- end }}
+    retentionPolicy: {{ default "15d" .Values.backups.retentionPolicy }}
+    target: prefer-standby
+  {{- end }}
+  bootstrap:
+    {{- if and .Values.recovery.enabled (not .Values.backups.enabled) }}
+    recovery:
+      source: {{ include "cnpg.clusterName" . }}
+      {{- if .Values.recovery.snapshots.enabled }}
+      volumeSnapshots:
+        storage:
+          name: {{ .Values.recovery.snapshots.name }}
+          kind: VolumeSnapshot
+          apiGroup: snapshot.storage.k8s.io
+        {{- if .Values.recovery.snapshots.wal.enabled }}
+        walStorage:
+          name: {{ .Values.recovery.snapshots.name }}
+          kind: VolumeSnapshot
+          apiGroup: snapshot.storage.k8s.io
+        {{- end }}        
+      {{- end }}
+      {{- if .Values.recovery.recoveryTarget.enabled }}
+      recoveryTarget:
+        targetTime: "{{ .Values.recovery.recoveryTarget.targetTime }}"
+      {{- end }}
+    {{- end }}
+    {{- if not .Values.recovery.enabled }}
+    initdb:
+      dataChecksums: true
+      database: {{ index .Values.databases 0 }}
+      owner: dpc-oa
+      secret:
+        name: {{ .Release.Name }}-cnpg-user-secret
+      {{- if .Values.postInit.enabled }}
+      postInitSQL:
+      {{- range $index, $db := .Values.databases }}
+      {{- if ne $index 0 }}
+        - CREATE DATABASE {{ $db }} WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'C';
+        - ALTER DATABASE {{ $db }} OWNER TO "dpc-oa";
+      {{- end }}
+      {{- end }}
+      {{- range .Values.postInit.queries }}
+        - {{ . }}
+      {{- end }}
+      {{- end }}
+          # Database-import en migratie
+      {{- if .Values.import.enabled }}
+      import:
+        type: {{ default "microservice" .Values.import.type }}
+        databases:
+        {{- range .Values.databases }}
+          - {{ . }}
+        {{- end }}
+        source:
+          externalCluster: source-cluster
+      {{- end }}
+  {{- end }}  
+  primaryUpdateStrategy: {{ default "supervised"  .Values.primaryUpdateStrategy }}
+  enableSuperuserAccess: true
+  storage:
+    size: {{ default "1Gi" .Values.storage.size }}
+    pvcTemplate:
+      accessModes:
+      {{- range .Values.storage.accessModes }}
+        - {{ . }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ default "1Gi" .Values.storage.size }}
+      storageClassName: {{ .Values.storage.storageClassName }}
+      volumeMode: {{ .Values.storage.volumeMode }}
+  {{- if .Values.storage.wal.enabled }}
+  walStorage:
+    size: {{ default "1Gi" .Values.storage.wal.size }}
+  {{- end }}
+  {{- if and (not .Values.import.enabled) (not .Values.recovery.enabled) }}
+  externalClusters:
+    {{- if .Values.recovery.enabled }}
+    - name: {{ include "cnpg.clusterName" . }}
+      barmanObjectStore:
+        destinationPath: "s3://{{ .Values.recovery.bucket }}/"
+        endpointURL: {{ printf "%s://%s:%s" (default "http" .Values.recovery.protocol) (default "minio" .Values.recovery.endpoint) (default "9000" .Values.recovery.port) }}
+        s3Credentials:
+          accessKeyId:
+            name: "{{ .Release.Name }}-{{ .Values.recovery.secret }}"
+            key: user
+          secretAccessKey:
+            name: "{{ .Release.Name }}-{{ .Values.recovery.secret }}"
+            key: password
+    {{- end }}
+    {{- if .Values.import.enabled }}
+    - name: source-cluster
+      connectionParameters:
+        host: {{ .Values.connectionParameters.host }}
+        user: {{ default "postgres" .Values.connectionParameters.user }}
+      {{- if .Values.import.secret }}
+      password:
+        name: {{ .Values.import.secret }}
+        key: POSTGRES_PASSWORD
+      {{- end }}
+    {{- end }}
+  {{- end }}  

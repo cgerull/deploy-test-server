@@ -1,0 +1,10 @@
+#apiVersion: monitoring.coreos.com/v1
+#kind: PodMonitor
+#metadata:
+#  name: {{ include "cnpg.fullname" . }}-pod-monitor
+#spec:
+#  selector:
+#    matchLabels:
+#      "cnpg.io/cluster": {{ include "cnpg.clusterName" . }}
+#  podMetricsEndpoints:
+  #  - port: metrics

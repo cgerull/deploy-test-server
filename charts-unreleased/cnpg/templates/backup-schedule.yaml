@@ -1,0 +1,19 @@
+# Backup schedule - https://cloudnative-pg.io/documentation/current/backup_recovery/#scheduled-backups
+#
+{{- if .Values.backups.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: {{ include "cnpg.fullname" . }}-backup-schedule
+spec:
+  # Attention: is not standard cron, but is Kubernetes cron
+  # https://cloudnative-pg.io/documentation/current/backup_recovery/#scheduled-backups
+  # https://pkg.go.dev/github.com/robfig/cron#hdr-CRON_Expression_Format
+  schedule: {{ default "0 0 * * 7" .Values.backups.schedule }}
+  {{- if .Values.backups.snapshots.enabled }}
+  method: volumeSnapshot
+  {{- end }}
+  backupOwnerReference: self
+  cluster:
+    name: {{ include "cnpg.clusterName" . }}
+{{- end }}

@@ -1,0 +1,66 @@
+global:
+  cluster: test7
+clusterName: pro-cluster
+instances: 3
+logLevel: info
+postInit:
+  enabled: false
+  queries:
+    - COMMIT;
+connections:
+  enabled: false
+  max: 1000
+  size: 10
+backups:
+  enabled: false
+  bucket: backups
+  secret: minio-admin-user
+  endpoint: minio.dpc-oa-pro-minio.svc.cluster.local
+  schedule: 0 0 * * *
+  retentionPolicy: 30d
+  snapshots:
+    enabled: false
+    className: standard
+  wal:
+    enabled: true
+    compression: "gzip"
+    maxParellel: 8
+    encryption: 
+      enabled: true
+      method: "AES256"
+recovery:
+  enabled: false
+  name: "Snapshot-1"
+  secret: minio-api-user
+  endpoint: minio.dpc-oa-pro-minio.svc.cluster.local
+  bucket: backups-dpc-oa-pro-dev
+  snapshots:
+    enabled: false
+    name: Snapshot-1
+    wal:
+      enabled: true
+  recoveryTarget:
+    enabled: true
+    targetTime: "2023-09-06T08:00:00"
+databases:
+  - eerste-live-site
+import:
+  enabled: true
+  type: microservice
+  secret: import-secret
+primaryUpdateStrategy: unsupervised
+podMonitor:
+  enabled: true
+storage:
+  size: 1Gi
+  # accessModes:
+  #   - ReadWriteOnce
+  # storageClassName: ''
+  # volumeMode: Filesystem
+  wal:
+    enabled: true
+    size: 1Gi
+
+connectionParameters:
+  host: pro-cluster.pro-dpc-tst-1
+  user: postgres

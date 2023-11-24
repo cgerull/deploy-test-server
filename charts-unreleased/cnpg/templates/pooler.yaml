@@ -1,0 +1,36 @@
+{{- if .Values.connections.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: {{ include "cnpg.fullname" . }}-pooler
+spec:
+  cluster:
+    name: {{ include "cnpg.clusterName" . }}
+
+  instances: {{ .Values.instances }}
+  type: rw # Read-write
+
+  pgbouncer:
+    poolMode: session
+    parameters:
+      max_client_conn: "{{ .Values.connections.max }}"
+      default_pool_size: "{{ .Values.connections.size }}"
+
+  template: # https://cloudnative-pg.io/documentation/current/api_reference/#poolerspec
+    metadata:
+      labels:
+        app: pooler
+        egress-frontoffice-policy: allow
+        tier: vertrouwd
+    spec:
+      containers:
+        - name: pgbouncer # https://github.com/pgbouncer/pgbouncer/releases
+          image: harbor.cicd.s15m.nl/ghcr-io-proxy/cloudnative-pg/pgbouncer:1.18.0
+          resources:
+            requests:
+              cpu: "0.1"
+              memory: "100Mi"
+            limits:
+              cpu: "0.5"
+              memory: "500Mi"
+{{- end }}
