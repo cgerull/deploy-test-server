@@ -4,7 +4,7 @@ items:
   kind: Application
   metadata:
     name: testserver
-    namespace: testserver
+    namespace: argocd
   spec:
     project: dev-cluster
     destination:
