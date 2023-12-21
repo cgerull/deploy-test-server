@@ -1,0 +1,84 @@
+# Dev local configuaration
+#
+image:
+  tag: "1.0.0"
+
+namespace: testserver
+
+# -- Horizontal scaling settings.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 50
+  # targetMemoryUtilizationPercentage: 70
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ports:
+  - name: http
+    containerPort: 8080
+    protocol: TCP
+
+env:
+  - name: SECRET_KEY
+    value: DevHelmChartSecret
+  - name: ENV
+    value: "dev-cluster"
+
+# volumeMounts:
+#   - mountPath: /run/secret/my-secret
+#     name: testsecret
+
+ingress:
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: testserver.dieren.gerull.nl
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: testserver
+              port:
+                number: 80
+
+persistence:
+  enabled: false
+  snapshots: false
+  volumes:
+    - name: testserver-data
+      mountPath: /data
+      claimName: testserver-data
+      # storageClass: "local-path"
+      size: 512M
+      accessMode: ReadWriteMany
+
+sealedSecrets:
+  enabled: true
+  secrets:
+    - secretName: testserver
+      secretAnnotations: {}
+      encryptedData:
+        testserver: AgADj5bFAW4dzFXVVt7GCpMpkirJ61FqXR+vtuMx4YJvbszdr4ipgdJlwdzCt57QrfmK8PzW/uWmOIJ0NvFqtwJkVlceErvDeJCYJj4amThza/AdA0NcTm0uaa4aaq2p738c8oGkxGdshU6SY0ehNKHbubwvphmG+OkXLPIvGxqSNZQk64Oci3qdSBiG2ivQdFG1idnUHeRiA+lg1jBEv08NO98yjpU6oVc018/b+dp5pvfsGp3Uz1EHtrxFGAdhI1S04Jvc0gqYgbuOy8Nhl+iGwg/0hlJyz/A75YmlktlFZas8EVls9dx/8Nfp2iI+dNM+NMtF6GM1SkkVek82k5mdMwIo7IrNA48x0BlNV6NwbOW1gjcygTV56GNB9hYi7TLGbqglk78UEgoT1GMhWo/8LkeX+hruut2Ss3fGuWTBmoJ3EmsU9U9lrG6lFwC+7LYxNfHckV+m2op+caB2yt76ks2AkdbHGhKHJ53TPvUq/nAGXtLHaPtfORxwMXRRDPf3fM2u+5aGua8shrzpMUvrY579e8gj2WwxUVsnRee/qH7Coj1L8EzHnPMaaXiT7Tt1+G1iIJXz4yGZpLm2fZx3WKZgPw5WD3fkefLula4L5z8QL57e3RQ2edrLta6000fS04u8uAtqmAbyXp8/X8+4VUHs4P2GeY7MO8X+Z3fzEU4M4qgAMImRf5Izexr8u8XcpOqiDbLDvmSJpvn7k9LaxcQ=
+
+# livenessProbe:
+#   httpGet:
+#     path: /health
+#     port: 8080
+#   initialDelaySeconds: 30
+#   periodSeconds: 10
+#   failureThreshold: 5

@@ -15,6 +15,9 @@ fullnameOverride: ""
 labels:
   app.kubernetes.io/app: testsuite
 
+# --Namespace if not deployed via helm or sealedSecretes are defined
+# namespace: testserver
+
 # -- Configure (cluster-)roles for granulated permissions.
 serviceAccount:
   # -- Specifies whether a service account should be created
@@ -54,7 +57,7 @@ autoscaling:
 #      maxUnavailable: 1
 
 # -- # Replicaset history to keep, default = 10
-revisionHistoryLimit: 2Replicaset history to keep, default = 10
+revisionHistoryLimit: 2
 # revisionHistoryLimit: 2
 
 # -- Expose standard Http port
@@ -84,15 +87,22 @@ env:
     value: None
 
 
-livenessProbe:
-  httpGet:
-    path: /health
-    port: http
+# livenessProbe:
+#   httpGet:
+#     path: /health
+#     port: http
+#   initialDelaySeconds: 20
+#   periodSeconds: 5
+#   # One second longer than command timeout should prevent generation of zombie processes.
+#   timeoutSeconds: 6
+#   successThreshold: 1
+#   failureThreshold: 5
 
-readinessProbe:
-  httpGet:
-    path: /health
-    port: http
+# readinessProbe:
+#   httpGet:
+#     path: /health
+#     port: http
+#   initialDelaySeconds: 20
 
 # -- Minimun values, increase in downstream configs.
 resources:
@@ -131,6 +141,15 @@ localSecrets:
     - name: testsecret
       mountPath: /run/secret/my-secret
       secretName: my_secret
+
+sealedSecrets:
+  enabled: false
+  secrets:
+    - secretName: testserver
+      secretAnnotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      encrytedData:
+        key: mumblemumblemumble
 
 nodeSelector: {}
 
