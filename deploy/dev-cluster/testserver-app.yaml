@@ -1,0 +1,22 @@
+apiVersion: v1
+items:
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    name: testserver
+    namespace: testserver
+  spec:
+    project: dev-cluster
+    destination:
+      namespace: testserver
+      server: https://kubernetes.default.svc
+    source:
+      path: kubernetes/dev-local
+      repoURL: https://github.com/cgerull/deploy-test-server
+      targetRevision: add-dev-cluster-config
+    syncPolicy:
+      automated: {}
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
