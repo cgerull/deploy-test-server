@@ -71,14 +71,15 @@ sealedSecrets:
   enabled: true
   secrets:
     - secretName: testserver
-      secretAnnotations: {}
+      secretAnnotations:
+        sealedsecrets.bitnami.com/namespace-wide: "true"
       encryptedData:
-        testserver: AgDARrbVVy15ZbY/U4p6vb7ARB85aQkYb8vHmFtjf+Ewac5wfyaHcqmA1luaaj0AiB5+DvPV6VWV7RwDaxFUvDyvKOc7FkYhP09vu+JccJ/oT1zr48ZS8BkLTJPfzZJXg0Hx0m1RVxbT6h4vvj7r9xrzRsw+rBBEkum5BOdA7TeDXiTf3JiiSXLB11nOrObH4IdWXWir1Rq8A3ReN8XeJ1KHZQgQdiHKEehT8q+GpuuRDl9uJN90brT2HjDH1L354hwtCc044ZPq2fBaAyJmKUApBzntO6yAK7DpsccBVydD5Vdvj3vPj6Tg9J9aeiQoExC8qzfYYaCmU5zYvvc6SamqvrJwSjtfUJD0l0YUXtHzk0CQ7P4k9EKmeVIRScr3RM7TeiD/3bQMuJPza0+VpgZcjsCTW0TASyq8kpxsz+t//lya4pQB/VDVELKUvaHVtWLITas1qbINe0TEs5G4tWZabsdDKp43xv28Xl3L1GApp7Va1SUl9Qh6/SWdcdTRrhx4ODVixT6PlhzvmevVKN5DrvyxYEfPHs/d61Uvzk/KuUS0yfHQ9D9JnrWAWRkLnnFuHuGSc7EmFhUpzGQzDh80T2mCJBfebsX/CIjZJT0x4t5ev1QS+7I+Iyjj5Tn0qpmdiwQIIK7F6X1co/3+LGiWdWrJQR/0lwGOS39u7uuuMFi/5nYiGXCskHEAfzgsEKhMCQ4Sloh79n3yfE2m9iaWsVw=
+        testserver: AgC4clEQU2rxKhBvBfTWUx1puSEG3LZWX07A1QHibPyzvSgkjpNSjlKoDeMxg9mlSDxOE9FonAuhcc3Gxl6PBy4TQl3Km0P2wAag8Hn8mUW0HtLqkB6pCs0MJg8KpAMZqiQgWpGHZgaqai+cngs/fnhnubk3ZGmeLVZys3CxoUQ2nL4CCVKCruV6nDPnkXdK27qvzlZgx8LrxAmuN2g7bG/abVrRVpzkj6xk3uvHbAjhOue9bncS9eBUzM3kObJEtyjwNhN43o6QK8eRlaW1WB0QLwSDTDbV+NSS6KpG7MIqPiuuX9utsrf3QYQr1mSCzKvev7NgiZzfmwDP2LJod6GC9p0U0b3c8rhnXVL1HNdSDR/VuBS+16DGsPGRsVLc6eHooFYtMmdiHJXcoCc6OvrpWcPZr3oQC+WkyC4SJx8TR24DZnMUSa/yJlZbMpmiJhfLLlSRJMc6WAmvqkf3DNHcwTVPqes/GRWc+IJEtWWqDxC/IkLG91Uonv2nO4E+4bbS7U8BLap1vfK0O+yOATCnP7K+9Z/fZZO1PQTjg/5WcanT3U7RYqBUU7RCp+j1gbWrruouaxpn4TLc2D3jr5N6si/daZgiI+sJzBqqlvhm9+jtkw4ekCnYSBOCrQVyleoV3wMlRlgUUrnQxa4YHnNRrfPmiLjBA2osRgR5H6Zj1cr/OEu+lp6TNjxe9BUr2sNtKOas8/vdelukU+y2L7p3JAw=
 
-# livenessProbe:
-#   httpGet:
-#     path: /health
-#     port: 8080
-#   initialDelaySeconds: 30
-#   periodSeconds: 10
-#   failureThreshold: 5
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 5
