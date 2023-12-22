@@ -7,13 +7,13 @@
 
 # But YAML is better for human users
 # Create secret from and store in a local file
-echo -n mySealedSecret | kubectl create secret generic testserver --dry-run=client --from-file=testserver=/dev/stdin -o yaml >testsecret.yaml
+echo mySealedSecret | kubectl create secret generic testserver --dry-run=client --from-file=testserver=/dev/stdin -o yaml >testsecret.yaml
 
 # Seal it with the target namespace
 kubeseal -n testserver -o yaml <testsecret.yaml >testsealedsecret.yaml
 
 # Create secret in namespace
-kubectl apply -f testsealedsecret.yaml
+# kubectl apply -f testsealedsecret.yaml
 
-# Check 
-kubectl get secret testsecret
+# Check
+# kubectl get secret testsecret

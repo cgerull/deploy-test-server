@@ -147,7 +147,7 @@ sealedSecrets:
   secrets:
     - secretName: testserver
       secretAnnotations:
-        sealedsecrets.bitnami.com/cluster-wide: "true"
+        sealedsecrets.bitnami.com/namespace-wide: "true"
       encrytedData:
         key: mumblemumblemumble
 
