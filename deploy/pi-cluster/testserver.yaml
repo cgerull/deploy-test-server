@@ -3,13 +3,29 @@
 image:
   tag: 1.0.0
 
-replicaCount: 2
+replicaCount: 1
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
 
 env:
   - name: SECRET_KEY
-    value: DevHelmChartSecret
+    value: PiHelmChartSecret
+  # - name: SECRET_FILE
+  #   value: "/run/secrets/testsecret"
   - name: ENV
-    value: 'Dev'
+    value: 'pi-cluster'
   # - name: REDIS_PASSWORD
   #   value: cEPguKSbSp
   # - name: REDIS_SERVER
@@ -31,3 +47,24 @@ ingress:
               name: testserver
               port:
                 number: 80
+
+persistence:
+  enabled: true
+  snapshots: false
+  volumes:
+    - name: instance
+      mountPath: /home/web/instance
+      claimName: instance-data
+      storageClass: "longhorn"
+      size: 250Mi
+      accessMode: ReadWriteMany
+
+tmpfs:
+  enabled: false
+
+localSecrets:
+  enabled: false
+  secrets:
+    - name: testsecret
+      mountPath: /run/secret/my-secret
+      secretName: my_secret
