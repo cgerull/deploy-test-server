@@ -89,10 +89,10 @@ livenessProbe:
     path: /health
     port: http
 
-readinessProbe:
-  httpGet:
-    path: /health
-    port: http
+# readinessProbe:
+#   httpGet:
+#     path: /health
+#     port: http
 
 # -- Minimun values, increase in downstream configs.
 resources:

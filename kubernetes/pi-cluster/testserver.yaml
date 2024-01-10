@@ -11,6 +11,27 @@ metadata:
     app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/managed-by: Helm
 ---
+# Source: testserver/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  annotations:
+    "helm.sh/resource-policy": keep
+  name: "instance-data"
+  labels:
+    helm.sh/chart: testserver-1.0.0
+    app.kubernetes.io/name: testserver
+    app.kubernetes.io/instance: testserver
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "250Mi"
+  storageClassName: "longhorn"
+---
 # Source: testserver/templates/service.yaml
 apiVersion: v1
 kind: Service
@@ -45,7 +66,7 @@ metadata:
     app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/managed-by: Helm
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: testserver
@@ -70,23 +91,17 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: SECRET_KEY
-              value: DevHelmChartSecret
+              value: PiHelmChartSecret
             - name: ENV
-              value: Dev
+              value: pi-cluster
           ports:
             - containerPort: 8080
               name: http
               protocol: TCP
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
             - name: instance
               mountPath: /home/web/instance
           livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-          readinessProbe:
             httpGet:
               path: /health
               port: http
@@ -99,10 +114,9 @@ spec:
               cpu: 20m
               memory: 72Mi
       volumes:
-        - name: tmp
-          emptyDir: {}
         - name: instance
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: instance-data
 ---
 # Source: testserver/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
