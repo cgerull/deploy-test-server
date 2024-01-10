@@ -54,7 +54,7 @@ autoscaling:
 #      maxUnavailable: 1
 
 # -- # Replicaset history to keep, default = 10
-revisionHistoryLimit: 2Replicaset history to keep, default = 10
+revisionHistoryLimit: 2
 # revisionHistoryLimit: 2
 
 # -- Expose standard Http port
