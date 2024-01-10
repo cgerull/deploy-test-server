@@ -50,7 +50,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: testserver
       app.kubernetes.io/instance: release-name
-  revisionHistoryLimit: 2Replicaset history to keep, default = 10
+  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
