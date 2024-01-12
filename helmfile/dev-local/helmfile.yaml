@@ -3,14 +3,17 @@ repositories:
   - name: bitnami
     url: https://charts.bitnami.com/bitnami
 
-  - name: gitlab
-    url: https://{{ requiredEnv "GITHUB_TOKEN" }}@raw.gitlab.com/api/v4/projects/34978775/packages/helm/stable
+  - name: isotoma 
+    url: https://isotoma.github.io/charts/
+
+  # - name: gitlab
+  #   url: https://{{ requiredEnv "GITLAB_TOKEN" }}@raw.gitlab.com/api/v4/projects/34978775/packages/helm/stable
     # url: https://gitlab.com/api/v4/projects/34978775/packages/helm/stable
 
 releases:
   - name: testserver
-    chart: testserver
-    version: 1.0.0
+    chart: ../../charts/testserver
+    # version: 1.0.0
     values:
       - testserver.yaml
 
