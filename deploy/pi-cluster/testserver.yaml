@@ -35,10 +35,10 @@ ingress:
   enabled: true
   annotations:
     # nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: web
   className: traefik
   hosts:
-    - host: testserver.dieren.gerull.nl
+    - host: testserverk8s.dieren.gerull.nl
       paths:
         - path: /
           pathType: Prefix
@@ -49,13 +49,13 @@ ingress:
                 number: 80
 
 persistence:
-  enabled: true
+  enabled: false
   snapshots: false
   volumes:
     - name: instance
       mountPath: /home/web/instance
       claimName: instance-data
-      storageClass: "longhorn"
+      storageClass: "nfs-client"
       size: 250Mi
       accessMode: ReadWriteMany
 

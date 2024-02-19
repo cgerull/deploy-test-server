@@ -5,7 +5,7 @@ image:
 
 # -- Horizontal scaling settings.
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 3
   targetCPUUtilizationPercentage: 50
@@ -20,10 +20,10 @@ upgradeStrategy:
 revisionHistoryLimit: 2
 
 securityContext:
-  capabilities:
-    drop:
-    - ALL
-  readOnlyRootFilesystem: true
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
 
@@ -35,6 +35,24 @@ env:
     value: DevHelmChartSecret
   - name: ENV
     value: "dev-local"
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 15
+  successThreshold: 1
+  timeoutSeconds: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 2
 
 # volumeMounts:
 #   - mountPath: /run/secret/my-secret
@@ -66,8 +84,11 @@ persistence:
       size: 512M
       accessMode: ReadWriteMany
 
+tmpfs:
+  enabled: false
+
 localSecrets:
-  enabled: true
+  enabled: false
   secrets:
     - name: testsecret
       secretName: testserver
