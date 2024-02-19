@@ -1,0 +1,28 @@
+execution:
+- concurrency: 8
+  ramp-up: 20s
+  hold-for: 15m
+  scenario: testServerLocal
+ 
+
+scenarios:
+  testServerGerull:
+    default-address: http://testserver.dev.gerull.nl
+    requests: 
+      - /
+      - /echo
+
+  testServerAzure:
+    default-address: https://cg-echo-server.azurewebsites.net
+    requests: 
+      - /
+
+  testServerLocal:
+    default-address: http://pi4bnode01:4080
+    requests: 
+      - /echo
+
+  testServerGoogle:
+    default-address: https://testserver-ussuvxdaka-ew.a.run.app
+    requests: 
+      - /
