@@ -1,0 +1,13 @@
+apiVersion: v2
+name: redis
+description: Umbrella chart for bitnami redis
+
+type: application
+
+version: 0.1.0
+appVersion: "19.6.1"
+
+dependencies:
+  - name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 19.6.1

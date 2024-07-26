@@ -1,0 +1,83 @@
+{{- if .Values.postgresql.backup.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "postgresql.fullname" . }}-pgdumpall-init
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "postgresql.labels" . | nindent 8 }}
+        app.kubernetes.io/component: pg_dumpall
+        {{- with .Values.postgresql.backup.cronjob.labels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.postgresql.image.pullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: pgdumpall-init
+          image: {{ .Values.postgresql.image.registry }}/bitnami/postgresql:{{ .Values.postgresql.image.tag }}
+          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy | quote }}
+          env:
+            - name: PGUSER
+              value: postgres
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.global.postgresql.auth.existingSecret }}
+                  key: postgres-password
+            - name: PGPORT
+              value: "5432"
+            - name: PGHOST
+              value: {{ include "postgresql.fullname" . }}
+            - name: PGDUMP_DIR
+              value: {{ .Values.postgresql.backup.cronjob.storage.mountPath }}
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              [ $(ls -1 ${PGDUMP_DIR}/pg_dumpall-*.pgdump 2>/dev/null | wc -l) -gt 0 ] && exit 0
+              sleep 30
+              pg_dumpall --clean --if-exists --load-via-partition-root --quote-all-identifiers \
+                --no-password --file=${PGDUMP_DIR}/pg_dumpall-init-$(date '+%Y-%m-%d-%H-%M').pgdump
+          volumeMounts:
+            {{- if .Values.postgresql.backup.cronjob.storage.enabled }}
+            - name: datadir
+              mountPath: {{ .Values.postgresql.backup.cronjob.storage.mountPath }}
+              subPath: {{ .Values.postgresql.backup.cronjob.storage.subPath }}
+            {{- end }}
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+          {{- if .Values.postgresql.backup.cronjob.containerSecurityContext.enabled }}
+          securityContext: {}
+          {{- end }}
+          {{- if .Values.postgresql.backup.cronjob.resources }}
+          resources: {{- toYaml .Values.backup.cronjob.resources | nindent 14 }}
+          {{- end }}
+      restartPolicy: {{ .Values.postgresql.backup.cronjob.restartPolicy }}
+      {{- if .Values.postgresql.backup.cronjob.podSecurityContext.enabled }}
+      securityContext:
+        fsGroup: {{ .Values.postgresql.backup.cronjob.podSecurityContext.fsGroup }}
+      {{- end }}
+      volumes:
+        {{- if .Values.postgresql.backup.cronjob.storage.enabled }}
+        {{- if .Values.postgresql.backup.cronjob.storage.existingClaim }}
+        - name: datadir
+          persistentVolumeClaim:
+            claimName: {{ printf "%s" (tpl .Values.postgresql.backup.cronjob.storage.existingClaim .) }}
+        {{- else }}
+        - name: datadir
+          persistentVolumeClaim:
+            claimName: {{ include "postgresql.fullname" . }}-pgdumpall
+        {{- end }}
+        {{- end }}
+        - name: empty-dir
+          emptyDir: {}
+{{- end }}

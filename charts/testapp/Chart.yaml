@@ -1,0 +1,17 @@
+apiVersion: v2
+name: testapp
+description: A collection of helm charts for testserver
+icon: https://gitlab.cicd.s15m.nl/uploads/-/system/project/avatar/4481/ro-beeldmerk.png
+type: application
+version: 1.0.0
+appVersion: 0.1.0 # Should mirror version in package.json
+
+dependencies:
+  - name: testserver
+    version: 1.0.1
+  - name: redis
+    version: 1.0.0
+    condition: global.featureFlags.redis
+  - name: postgresql
+    version: 1.0.0
+    condition: global.featureFlags.postgresql
