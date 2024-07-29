@@ -18,8 +18,8 @@ services:
         options:
           syslog-address: "tcp://127.0.0.1:1514"
           tag: test-suite-mariadb
-  redis: 
-    image: redis:alpine3.15
+  redis:
+    image: redis:alpine3.19
     ports:
       - "6379:6379"
     networks:
@@ -45,7 +45,7 @@ services:
           syslog-address: "tcp://127.0.0.1:1514"
           tag: test-suite-minio
   web:
-    image: cgerull/testserver:latest
+    image: cgerull/testserver:1.0.1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testserver.rule=Host(`testserver.dieren.gerull.nl`)"
@@ -57,6 +57,7 @@ services:
       - SECRET_KEY=DockerComposeSecret
       - REDIS_SERVER=redis
       - ENV=Development
+      - VERSION="1.0.1"
     networks:
       - testsuite
       - traefik-net
