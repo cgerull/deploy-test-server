@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.0.0"
@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.0.0"
@@ -39,7 +39,7 @@ kind: Deployment
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.0.0"
@@ -75,7 +75,10 @@ spec:
             runAsUser: 1000
           image: "cgerull/testserver:1.0.0"
           imagePullPolicy: IfNotPresent
+
           env:
+            - name: VERSION
+              value: 1.0.0
             - name: SECRET_KEY
               value: DevHelmChartSecret
             - name: ENV
@@ -118,7 +121,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.0.0"
@@ -144,7 +147,7 @@ kind: Ingress
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.0.0"
