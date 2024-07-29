@@ -78,11 +78,27 @@ ingress:
 env:
   - name: SECRET_KEY
     value: HelmChartSecret
-  - name: REDIS_HOST
+    # valueFrom:
+    #   secretKeyRef:
+    #     name: testserver
+    #     key: SECRET_KEY
+  - name: REDIS_SERVER
     value: None
-  - name: REDIS_PASSWORD
-    value: None
+  # - name: REDIS_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: redisserver
+  #       key: REDIS_PASSWORD
 
+genericSecrets:
+  enabled: false
+  secrets:
+    - name: testserver
+      key: SECRET_KEY
+      value: GenericChartSecret
+    - name: redisserver
+      key: REDIS_PASSWORD
+      value: cEPguKSbSp
 
 livenessProbe:
   httpGet:

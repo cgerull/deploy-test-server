@@ -5,23 +5,39 @@ global:
 
 testserver:
   image:
-  tag: 1.0.1
+  tag: 1.0.2
 
   env:
     - name: SECRET_KEY
-      value: DevHelmChartSecret
+      valueFrom:
+        secretKeyRef:
+          name: testserver
+          key: SECRET_KEY
     - name: ENV
       value: 'Dev'
-    - name: REDIS_PASSWORD
-      value: cEPguKSbSp
     - name: REDIS_SERVER
-      value: testapp-redis-master
+      value: redis-master
+    - name: REDIS_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: redisserver
+          key: REDIS_PASSWORD
+
+  genericSecrets:
+    enabled: false
+    secrets:
+      - name: testserver
+        key: SECRET_KEY
+        value: GenricChartSecret
+      - name: redisserver
+        key: REDIS_PASSWORD
+        value: cEPguKSbSp
 
   ingress:
     enabled: true
     annotations: {}
     hosts:
-      - host: testserver-clgr.origin.p25e.nl
+      - host: testserver.local
         paths:
           - path: /
             pathType: Prefix
@@ -33,4 +49,5 @@ testserver:
 
 redis:
   auth:
-    password: cEPguKSbSp
+    existingSecret: "redisserver"
+    existingSecretPasswordKey: "REDIS_PASSWORD"
