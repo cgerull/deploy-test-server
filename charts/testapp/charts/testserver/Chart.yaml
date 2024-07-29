@@ -1,9 +1,9 @@
 apiVersion: v2
 name: testserver
 description: |
-  A Flask test application for various 
-  connections and configuration variations. 
+  A Flask test application for various
+  connections and configuration variations.
   Helm charts to test various CI/CD, orchestration and deployment methods.
 type: application
-version: 1.0.0
-appVersion: 1.0.0
+version: 1.0.1
+appVersion: 1.0.4

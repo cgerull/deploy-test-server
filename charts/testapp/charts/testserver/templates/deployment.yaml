@@ -42,8 +42,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
 
-          {{- with .Values.env }}
           env:
+            - name: VERSION
+              value: {{ .Values.image.tag | default .Chart.AppVersion }}
+          {{- with .Values.env }}
           {{- toYaml . | nindent 12  }}
           {{- end }}
 
