@@ -1,0 +1,26 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: testapp
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: testapp
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: https://github.com/cgerull/deploy-test-server
+      path: charts/testapp
+      targetRevision: main
+      helm:
+        valueFiles:
+          - deploy/reviewomgeving/testapp.yaml
+        # parameters:
+        #   - name: global.imageTag
+        #     value: master-$ARGOCD_APP_REVISION
+    # - repoURL: https://gitlab.cicd.s15m.nl/dpc/oa/pro/cluster-config/site-config.git
+    #   targetRevision: $CI_COMMIT_REF_NAME
+    #   ref: values
+  syncPolicy:
+    automated: {}
