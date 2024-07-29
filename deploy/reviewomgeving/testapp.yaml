@@ -1,4 +1,4 @@
-# Dev configuaration
+# Testserver Reviewomgeving Configuaration
 #
 global:
   featureFlags:
@@ -6,12 +6,10 @@ global:
     redis: true
 
 testserver:
-  image:
-    tag: 1.0.4
 
-replicaCount: 1
+  replicaCount: 2
 
-env:
+  env:
     - name: SECRET_KEY
       valueFrom:
         secretKeyRef:
@@ -36,20 +34,3 @@ env:
       - name: redisserver
         key: REDIS_PASSWORD
         value: vMm6lo4lBo
-
-ingress:
-  enabled: true
-  annotations:
-    # nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
-  className: traefik
-  hosts:
-    - host: testserver.dev.gerull.nl
-      paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: testserver
-              port:
-                number: 80
