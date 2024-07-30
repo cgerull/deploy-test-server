@@ -31,14 +31,8 @@ testserver:
       - name: redisserver
         key: REDIS_PASSWORD
         value: vMm6lo4lBo
-  securityContext:
-    runAsNonRoot: null
-    runAsUser: null
   ingress:
     enabled: true
-    # annotations:
-    #   # nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    #   traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
     ingressClassName: nginx
     hosts:
       - host: testserver-clgr.reviewomgeving.nl

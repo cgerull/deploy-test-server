@@ -63,16 +63,10 @@ spec:
       serviceAccountName: release-name-testserver
       securityContext:
         {}
-
       containers:
         - name: testserver
           securityContext:
-            capabilities:
-              drop:
-              - ALL
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 1000
+            {}
           image: "cgerull/testserver:1.0.0"
           imagePullPolicy: IfNotPresent
 

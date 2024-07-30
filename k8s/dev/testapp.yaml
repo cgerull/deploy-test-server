@@ -108,22 +108,6 @@ metadata:
     app.kubernetes.io/version: "1.0.4"
     app.kubernetes.io/managed-by: Helm
 ---
-# Source: testapp/charts/redis/charts/redis/templates/secret.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: testapp-redis
-  namespace: "testapp"
-  labels:
-    app.kubernetes.io/instance: testapp
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: redis
-    app.kubernetes.io/version: 7.2.5
-    helm.sh/chart: redis-19.6.1
-type: Opaque
-data:
-  redis-password: "OTZuc1BVUnpKRQ=="
----
 # Source: testapp/charts/testserver/templates/secret.yaml
 apiVersion: v1
 stringData:
@@ -491,12 +475,10 @@ spec:
       serviceAccountName: testapp-testserver
       securityContext:
         {}
-
       containers:
         - name: testserver
           securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
+            {}
           image: "cgerull/testserver:1.0.4"
           imagePullPolicy: IfNotPresent
 
@@ -581,7 +563,7 @@ spec:
         checksum/configmap: 86bcc953bb473748a3d3dc60b7c11f34e60c93519234d4c37f42e22ada559d47
         checksum/health: aff24913d801436ea469d8d374b2ddb3ec4c43ee7ab24663d5f8ff1a1b6991a9
         checksum/scripts: deaf0b799576df41c99375375e69fd2cd9aafc678e9891ce5c0e0508ace7b10e
-        checksum/secret: 3f9e6a79f1043142375f4cea84272e9cd92381fe238f5553bef472ab04a4aae0
+        checksum/secret: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
     spec:
       
       securityContext:
@@ -639,8 +621,8 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: testapp-redis
-                  key: redis-password
+                  name: redisserver
+                  key: REDIS_PASSWORD
             - name: REDIS_TLS_ENABLED
               value: "no"
             - name: REDIS_PORT
@@ -723,7 +705,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: "8Gi"
+            storage: "1Gi"
 ---
 # Source: testapp/charts/redis/charts/redis/templates/replicas/application.yaml
 apiVersion: apps/v1
@@ -762,7 +744,7 @@ spec:
         checksum/configmap: 86bcc953bb473748a3d3dc60b7c11f34e60c93519234d4c37f42e22ada559d47
         checksum/health: aff24913d801436ea469d8d374b2ddb3ec4c43ee7ab24663d5f8ff1a1b6991a9
         checksum/scripts: deaf0b799576df41c99375375e69fd2cd9aafc678e9891ce5c0e0508ace7b10e
-        checksum/secret: 9463728e791b10ce98901bf0a8e6e69d321b071c7543050de7c0172dd7000e34
+        checksum/secret: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
     spec:
       
       securityContext:
@@ -824,13 +806,13 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: testapp-redis
-                  key: redis-password
+                  name: redisserver
+                  key: REDIS_PASSWORD
             - name: REDIS_MASTER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: testapp-redis
-                  key: redis-password
+                  name: redisserver
+                  key: REDIS_PASSWORD
             - name: REDIS_TLS_ENABLED
               value: "no"
             - name: REDIS_PORT
@@ -920,7 +902,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: "8Gi"
+            storage: "1Gi"
 ---
 # Source: testapp/charts/testserver/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -935,7 +917,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 spec:
   rules:
-    - host: "testserver.local"
+    - host: "testserver-clgr.reviewomgeving.nl"
       http:
         paths:
           - path: /
