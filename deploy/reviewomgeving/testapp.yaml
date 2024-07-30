@@ -6,9 +6,7 @@ global:
     redis: true
 
 testserver:
-
   replicaCount: 2
-
   env:
     - name: SECRET_KEY
       valueFrom:
@@ -24,7 +22,6 @@ testserver:
         secretKeyRef:
           name: redisserver
           key: REDIS_PASSWORD
-
   genericSecrets:
     enabled: true
     secrets:
@@ -34,9 +31,9 @@ testserver:
       - name: redisserver
         key: REDIS_PASSWORD
         value: vMm6lo4lBo
-
-  securityContext: {}
-
+  securityContext:
+    runAsNonRoot: null
+    runAsUser: null
   ingress:
     enabled: true
     # annotations:
@@ -53,3 +50,5 @@ testserver:
                 name: testserver
                 port:
                   number: 80
+  persistence:
+    enabled: false
