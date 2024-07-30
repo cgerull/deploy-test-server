@@ -31,7 +31,7 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 # -- Should be set to least privileges.
-securityContext:
+containerSecurityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -39,8 +39,8 @@ securityContext:
   # seccompProfile:
   #     type: RuntimeDefault
   # allowPrivilegeEscalation: false
-  runAsNonRoot: true
-  runAsUser: 1001
+  # runAsNonRoot: true
+  # runAsUser: 1001
 
 # -- Horizontal scaling settings.
 autoscaling:

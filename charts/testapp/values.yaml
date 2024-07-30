@@ -6,7 +6,6 @@ global:
 testserver:
   image:
     tag: 1.0.4
-
   env:
     - name: SECRET_KEY
       valueFrom:
@@ -22,7 +21,6 @@ testserver:
         secretKeyRef:
           name: redisserver
           key: REDIS_PASSWORD
-
   genericSecrets:
     enabled: false
     secrets:
@@ -32,7 +30,6 @@ testserver:
       - name: redisserver
         key: REDIS_PASSWORD
         value: vMm6lo4lBo
-
   ingress:
     enabled: true
     annotations: {}
