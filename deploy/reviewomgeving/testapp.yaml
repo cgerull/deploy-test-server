@@ -35,6 +35,8 @@ testserver:
         key: REDIS_PASSWORD
         value: vMm6lo4lBo
 
+  securityContext: {}
+
   ingress:
     enabled: true
     # annotations:
