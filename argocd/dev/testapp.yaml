@@ -8,14 +8,17 @@ spec:
   project: default
   destination:
     namespace: testapp
-  sources:
-    - repoURL: https://github.com/cgerull/deploy-test-server
-      path: charts/testapp
-      targetRevision: main
-      helm:
-        valueFiles:
-          - deploy/reviewomgeving/testapp.yaml
-
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/cgerull/deploy-test-server
+    path: charts/testapp
+    targetRevision: create-testapp
+    helm:
+      valueFiles:
+        - ../../deploy/reviewomgeving/testapp.yaml
+        # parameters:
+        #   - name: global.imageTag
+        #     value: master-$ARGOCD_APP_REVISION
   syncPolicy:
     automated:
       prune: true
