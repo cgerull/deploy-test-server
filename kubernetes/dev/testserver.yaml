@@ -8,8 +8,26 @@ metadata:
     helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "1.0.4"
     app.kubernetes.io/managed-by: Helm
+---
+# Source: testserver/templates/secret.yaml
+apiVersion: v1
+stringData:
+  SECRET_KEY: GenricChartSecret
+kind: Secret
+metadata:
+  name: testserver
+type: Opaque
+---
+# Source: testserver/templates/secret.yaml
+apiVersion: v1
+stringData:
+  REDIS_PASSWORD: vMm6lo4lBo
+kind: Secret
+metadata:
+  name: redisserver
+type: Opaque
 ---
 # Source: testserver/templates/service.yaml
 apiVersion: v1
@@ -20,7 +38,7 @@ metadata:
     helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "1.0.4"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -42,7 +60,7 @@ metadata:
     helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "1.0.4"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -66,20 +84,26 @@ spec:
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
-          image: "cgerull/testserver:0.9.14"
+          image: "cgerull/testserver:1.0.4"
           imagePullPolicy: IfNotPresent
 
           env:
             - name: VERSION
-              value: 0.9.14
+              value: 1.0.4
             - name: SECRET_KEY
-              value: DevHelmChartSecret
+              valueFrom:
+                secretKeyRef:
+                  key: SECRET_KEY
+                  name: testserver
             - name: ENV
-              value: Dev
-            - name: REDIS_PASSWORD
-              value: cEPguKSbSp
+              value: Reviewomgeving
             - name: REDIS_SERVER
-              value: redis
+              value: testapp-redis-master
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_PASSWORD
+                  name: redisserver
           ports:
             - containerPort: 8080
               name: http
@@ -116,7 +140,7 @@ metadata:
     helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
-    app.kubernetes.io/version: "0.9.14"
+    app.kubernetes.io/version: "1.0.4"
     app.kubernetes.io/managed-by: Helm
   annotations:
     traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
