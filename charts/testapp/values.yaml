@@ -51,3 +51,23 @@ redis:
   auth:
     existingSecret: "redisserver"
     existingSecretPasswordKey: "REDIS_PASSWORD"
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+  replica:
+    persistence:
+      enabled: true
+      size: 1Gi
+
+postgresql:
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+  backup:
+    cronjob:
+      enabled: true
+      schedule: "0 18 * * *"
+      storage:
+        size: 1Gi

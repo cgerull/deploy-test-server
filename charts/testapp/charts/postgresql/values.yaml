@@ -2,7 +2,7 @@
 #
 postgresql:
   global:
-    storageClass: "standard-csi"
+    storageClass: ""
   image:
     registry: docker.io
     tag: 15.6.0-debian-12-r20
