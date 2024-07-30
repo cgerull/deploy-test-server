@@ -3,16 +3,16 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: testapp
-  namespace: argocd
+  namespace: dpc-oa-pro-clgr-workshops
 spec:
-  project: default
+  project: dpc-oa-intern
   destination:
-    namespace: testapp
+    namespace: dpc-oa-pro-clgr-workshops
     server: https://kubernetes.default.svc
   source:
     repoURL: https://github.com/cgerull/deploy-test-server
     path: charts/testapp
-    targetRevision: create-testapp
+    targetRevision: main
     helm:
       valueFiles:
         - ../../deploy/reviewomgeving/testapp.yaml
