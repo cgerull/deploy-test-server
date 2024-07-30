@@ -1,0 +1,94 @@
+{{- if .Values.postgresql.save_to_s3.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    {{- include "postgresql.labels" . | nindent 4 }}
+  name: {{ include "postgresql.fullname" . }}-save-dump-to-s3
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app.kubernetes.io/name: cnpg
+            egress-frontoffice-policy: allow
+            tier: zeer-vertrouwd
+        spec:
+          {{- with .Values.postgresql.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+          - command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Saving latest PostgreSql dump to MinIO."
+              LATEST_DUMP=$(ls -1 ${PGDUMP_DIR}/pg_dumpall-*.pgdump | tail -n 2 | head -n 1)
+              mc -C /tmp cp ${LATEST_DUMP}  MINIO/backups-{{ .Release.Namespace }}/$(basename ${LATEST_DUMP})
+              echo "PostgreSql dump saved to MINIO/backups-{{ .Release.Namespace }}/{LATEST_DUMP}."
+            env:
+            - name: MC_HOST_MINIO
+              valueFrom:
+                secretKeyRef:
+                  key: minio_alias
+                  name: {{ .Values.postgresql.save_to_s3.secretName }}
+
+            - name: PGDUMP_DIR
+              value: {{ .Values.postgresql.backup.cronjob.storage.mountPath }}
+            image: {{ .Values.postgresql.image.registry }}/{{ .Values.postgresql.save_to_s3.image.name }}:{{ .Values.postgresql.save_to_s3.image.tag }} #minio/mc
+            imagePullPolicy: IfNotPresent
+            name: {{ include "postgresql.fullname" . }}-pg-save-s3
+            resources:
+              {{- toYaml .Values.postgresql.save_to_s3.resources | nindent 14 }}
+            securityContext:
+              {{- toYaml .Values.postgresql.save_to_s3.securityContext | nindent 14 }}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            {{- if .Values.postgresql.backup.cronjob.storage.enabled }}
+            - name: datadir
+              mountPath: {{ .Values.postgresql.backup.cronjob.storage.mountPath }}
+              subPath: {{ .Values.postgresql.backup.cronjob.storage.subPath }}
+            {{- end }}
+            - mountPath: /tmp
+              name: empty-dir
+              subPath: tmp-dir
+          dnsPolicy: ClusterFirst
+          {{- with .Values.postgresql.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          restartPolicy: OnFailure
+          schedulerName: default-scheduler
+          terminationGracePeriodSeconds: 30
+          volumes:
+          {{- if .Values.postgresql.backup.cronjob.storage.enabled }}
+          {{- if .Values.postgresql.backup.cronjob.storage.existingClaim }}
+          - name: datadir
+            persistentVolumeClaim:
+              claimName: {{ printf "%s" (tpl .Values.postgresql.backup.cronjob.storage.existingClaim .) }}
+          {{- else }}
+          - name: datadir
+            persistentVolumeClaim:
+              claimName: {{ include "postgresql.fullname" . }}-pgdumpall
+          {{- end }}
+          {{- end }}
+          - name: empty-dir
+      ttlSecondsAfterFinished: 86400
+  schedule: 0 8 * * *
+  timeZone: {{ .Values.postgresql.backup.cronjob.timezone | quote}}
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  suspend: false
+{{- end }}

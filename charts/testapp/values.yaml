@@ -1,0 +1,53 @@
+global:
+  featureFlags:
+    postgresql: false
+    redis: true
+
+testserver:
+  image:
+    tag: 1.0.4
+
+  env:
+    - name: SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: testserver
+          key: SECRET_KEY
+    - name: ENV
+      value: 'Dev'
+    - name: REDIS_SERVER
+      value: redis-master
+    - name: REDIS_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: redisserver
+          key: REDIS_PASSWORD
+
+  genericSecrets:
+    enabled: false
+    secrets:
+      - name: testserver
+        key: SECRET_KEY
+        value: GenricChartSecret
+      - name: redisserver
+        key: REDIS_PASSWORD
+        value: vMm6lo4lBo
+
+  ingress:
+    enabled: true
+    annotations: {}
+    hosts:
+      - host: testserver.local
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: testserver
+                port:
+                  number: 80
+
+redis:
+  auth:
+    existingSecret: "redisserver"
+    existingSecretPasswordKey: "REDIS_PASSWORD"

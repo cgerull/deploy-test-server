@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "0.9.8"
@@ -17,7 +17,7 @@ kind: Service
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "0.9.8"
@@ -39,7 +39,7 @@ kind: Deployment
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "0.9.8"
@@ -68,7 +68,10 @@ spec:
             runAsUser: 1000
           image: "cgerull/testserver:0.9.8"
           imagePullPolicy: IfNotPresent
+
           env:
+            - name: VERSION
+              value: 0.9.8
             - name: SECRET_KEY
               value: DevHelmChartSecret
             - name: ENV
@@ -87,10 +90,6 @@ spec:
             - name: instance
               mountPath: /home/web/instance
           livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-          readinessProbe:
             httpGet:
               path: /health
               port: http
@@ -114,7 +113,7 @@ kind: Ingress
 metadata:
   name: release-name-testserver
   labels:
-    helm.sh/chart: testserver-1.0.0
+    helm.sh/chart: testserver-1.0.1
     app.kubernetes.io/name: testserver
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "0.9.8"

@@ -1,0 +1,215 @@
+# Overwrite bitnami postgresql values
+#
+postgresql:
+  global:
+    storageClass: "standard-csi"
+  image:
+    registry: docker.io
+    tag: 15.6.0-debian-12-r20
+  commonLabels: {}
+  auth:
+    ##
+    existingSecret: ""
+    ## @param auth.secretKeys.adminPasswordKey Name of key in existing secret to use for PostgreSQL credentials. Only used when `auth.existingSecret` is set.
+    ## @param auth.secretKeys.userPasswordKey Name of key in existing secret to use for PostgreSQL credentials. Only used when `auth.existingSecret` is set.
+    ## @param auth.secretKeys.replicationPasswordKey Name of key in existing secret to use for PostgreSQL credentials. Only used when `auth.existingSecret` is set.
+    ##
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+      replicationPasswordKey: replication-password
+  ## TLS configuration
+  ##
+  tls:
+    ## @param tls.enabled Enable TLS traffic support
+    ##
+    enabled: false
+  ## @section PostgreSQL Primary parameters
+  ##
+  primary:
+    initdb:
+      scripts: {}
+      ## @param primary.initdb.scriptsConfigMap ConfigMap with scripts to be run at first boot
+      ## NOTE: This will override `primary.initdb.scripts`
+      ##
+      scriptsConfigMap: ""
+      ## @param primary.initdb.scriptsSecret Secret with scripts to be run at first boot (in case it contains sensitive information)
+      ## NOTE: This can work along `primary.initdb.scripts` or `primary.initdb.scriptsConfigMap`
+      ##
+      scriptsSecret: ""
+      ## @param primary.initdb.user Specify the PostgreSQL username to execute the initdb scripts
+      ##
+      user: ""
+      ## @param primary.initdb.password Specify the PostgreSQL password to execute the initdb scripts
+      ##
+      password: ""
+    resourcesPreset: "small"
+    ## @param primary.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+    ## Example:
+    ## resources:
+    ##   requests:
+    ##     cpu: 2
+    ##     memory: 512Mi
+    ##   limits:
+    ##     cpu: 3
+    ##     memory: 1024Mi
+    ##
+    resources: {}
+    podAnnotations:
+      backup.velero.io/backup-volumes: data
+    persistence:
+      size: 8Gi
+  ## @section Backup parameters
+  ## This section implements a trivial logical dump cronjob of the database.
+  ## This only comes with the consistency guarantees of the dump program.
+  ## This is not a snapshot based roll forward/backward recovery backup.
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+  backup:
+    ## @param backup.enabled Enable the logical dump of the database "regularly"
+    enabled: false
+    cronjob:
+      ## @param backup.cronjob.schedule Set the cronjob parameter schedule
+      schedule: "0 23 * * *"
+      # schedule: "*/15 * * * *"
+      ## @param backup.cronjob.timeZone Set the cronjob parameter timeZone
+      timezone: "CET"
+      ## @param backup.cronjob.concurrencyPolicy Set the cronjob parameter concurrencyPolicy
+      concurrencyPolicy: Allow
+      ## @param backup.cronjob.failedJobsHistoryLimit Set the cronjob parameter failedJobsHistoryLimit
+      failedJobsHistoryLimit: 1
+      ## @param backup.cronjob.successfulJobsHistoryLimit Set the cronjob parameter successfulJobsHistoryLimit
+      successfulJobsHistoryLimit: 3
+      ## @param backup.cronjob.startingDeadlineSeconds Set the cronjob parameter startingDeadlineSeconds
+      startingDeadlineSeconds: "600"
+      ## @param backup.cronjob.ttlSecondsAfterFinished Set the cronjob parameter ttlSecondsAfterFinished
+      ttlSecondsAfterFinished: "86400"
+      ## @param backup.cronjob.restartPolicy Set the cronjob parameter restartPolicy
+      restartPolicy: OnFailure
+      ## @param backup.cronjob.podSecurityContext.enabled Enable PodSecurityContext for CronJob/Backup
+      ## @param backup.cronjob.podSecurityContext.fsGroup Group ID for the CronJob
+      podSecurityContext:
+        enabled: true
+        fsGroup: 1001
+      ## backup container's Security Context
+      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+      ## @param backup.cronjob.containerSecurityContext.runAsUser User ID for the backup container
+      ## @param backup.cronjob.containerSecurityContext.runAsGroup Group ID for the backup container
+      ## @param backup.cronjob.containerSecurityContext.runAsNonRoot Set backup container's Security Context runAsNonRoot
+      ## @param backup.cronjob.containerSecurityContext.readOnlyRootFilesystem Is the container itself readonly
+      ## @param backup.cronjob.containerSecurityContext.allowPrivilegeEscalation Is it possible to escalate backup pod(s) privileges
+      ## @param backup.cronjob.containerSecurityContext.seccompProfile.type Set backup container's Security Context seccompProfile type
+      ## @param backup.cronjob.containerSecurityContext.capabilities.drop Set backup container's Security Context capabilities to drop
+      containerSecurityContext:
+        runAsUser: 1001
+        runAsGroup: 0
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
+      ## @param backup.cronjob.command Set backup container's command to run
+      command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Starting PostgreSql dump of all databases."
+          pg_dumpall --clean --if-exists --load-via-partition-root --quote-all-identifiers \
+            --no-password --file=${PGDUMP_DIR}/pg_dumpall-$(date '+%Y-%m-%d-%H-%M').pgdump
+          echo "PostgreSql dump finished, taking a nap."
+          sleep 10800
+          echo "Terminate job after 3h waiting for Velero"
+
+      ## @param backup.cronjob.labels Set the cronjob labels
+      labels: {}
+      ## @param backup.cronjob.annotations Set the cronjob annotations
+      annotations:
+        backup.velero.io/backup-volumes: datadir
+      ## @param backup.cronjob.nodeSelector Node labels for PostgreSQL backup CronJob pod assignment
+      ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+      ##
+      nodeSelector: {}
+      storage:
+        ## @param backup.cronjob.storage.existingClaim Provide an existing `PersistentVolumeClaim` (only when `architecture=standalone`)
+        ## If defined, PVC must be created manually before volume will be bound
+        ##
+        existingClaim: ""
+        ## @param backup.cronjob.storage.resourcePolicy Setting it to "keep" to avoid removing PVCs during a helm delete operation. Leaving it empty will delete PVCs after the chart deleted
+        ##
+        resourcePolicy: ""
+        ## @param backup.cronjob.storage.storageClass PVC Storage Class for the backup data volume
+        ## If defined, storageClassName: <storageClass>
+        ## If set to "-", storageClassName: "", which disables dynamic provisioning
+        ## If undefined (the default) or set to null, no storageClassName spec is
+        ## set, choosing the default provisioner.
+        ##
+        storageClass: ""
+        ## @param backup.cronjob.storage.accessModes PV Access Mode
+        ##
+        accessModes:
+        - ReadWriteMany
+        ## @param backup.cronjob.storage.size PVC Storage Request for the backup data volume
+        ##
+        size: 8Gi
+        ## @param backup.cronjob.storage.annotations PVC annotations
+        ##
+        annotations: {}
+        ## @param backup.cronjob.storage.mountPath Path to mount the volume at
+        ##
+        mountPath: /backup/pgdump
+        ## @param backup.cronjob.storage.subPath Subdirectory of the volume to mount at
+        ## and one PV for multiple services.
+        ##
+        subPath: ""
+        ## Fine tuning for volumeClaimTemplates
+        ##
+        volumeClaimTemplates:
+          ## @param backup.cronjob.storage.volumeClaimTemplates.selector A label query over volumes to consider for binding (e.g. when using local volumes)
+          ## A label query over volumes to consider for binding (e.g. when using local volumes)
+          ## See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#labelselector-v1-meta for more details
+          ##
+          selector: {}
+  save_to_s3:
+    enabled: false
+    schedule: "0 8 * * *"   # every day at 8:00
+    secretName: pro-minio-for-backups
+    image:
+      name: minio/mc
+      tag: RELEASE.2024-07-08T20-59-24Z
+    resources:
+      limits:
+        cpu: 150m
+        ephemeral-storage: 1Gi
+        memory: 192Mi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 50Mi
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+  restore:
+    enabled: false
+  metrics:
+    ## @param metrics.enabled Start a prometheus exporter
+    ##
+    enabled: false
+  sealedSecrets:
+    enabled: false
+    # secrets:
+    #   - secretName: minio-api-user
+    #     app: postgresql
+    #     annotations:
+    #       sealedsecrets.bitnami.com/cluster-wide: "true"
+    #     encryptedData:
+    #       password: AgC...
+    #       user: AgB...

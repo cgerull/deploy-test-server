@@ -12,30 +12,30 @@ testserver:
 replicaCount: 1
 
 env:
-    - name: SECRET_KEY
-      valueFrom:
-        secretKeyRef:
-          name: testserver
-          key: SECRET_KEY
-    - name: ENV
-      value: 'Reviewomgeving'
-    - name: REDIS_SERVER
-      value: testapp-redis-master
-    - name: REDIS_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: redisserver
-          key: REDIS_PASSWORD
-
-  genericSecrets:
-    enabled: true
-    secrets:
-      - name: testserver
+  - name: SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: testserver
         key: SECRET_KEY
-        value: GenricChartSecret
-      - name: redisserver
+  - name: ENV
+    value: 'Reviewomgeving'
+  - name: REDIS_SERVER
+    value: testapp-redis-master
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: redisserver
         key: REDIS_PASSWORD
-        value: vMm6lo4lBo
+
+genericSecrets:
+  enabled: true
+  secrets:
+    - name: testserver
+      key: SECRET_KEY
+      value: GenricChartSecret
+    - name: redisserver
+      key: REDIS_PASSWORD
+      value: vMm6lo4lBo
 
 ingress:
   enabled: true

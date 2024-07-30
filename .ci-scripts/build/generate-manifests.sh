@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # generate-manifests.sh
-# Generates environment specific kubernetes manifests from 
+# Generates environment specific kubernetes manifests from
 # helm chart and specific values file.
 #
 # Requires:
@@ -17,7 +17,7 @@ if [ "$#" -ne 2 ]; then
 	exit 1
 fi
 
-CHART_DIR="charts"
+CHART_DIR="charts/testapp/charts"
 DEPLOY_VALUES="deploy"
 # DEPLOY_VALUES_PATH=${DEPLOY_VALUES}
 MANIFESTS="kubernetes"
@@ -50,7 +50,7 @@ if [ 'all' != "${ENVIRONMENT}" ]; then
 else
     #
     # Create kubernetes manifests per environment
-    for ENV in "${DEPLOY_VALUES}"/*; do 
+    for ENV in "${DEPLOY_VALUES}"/*; do
         if [ -f "${DEPLOY_VALUES}/${ENV##*/}/${CHART}".yaml ]; then
             # Strip leading path and trailing slashes
             generate_manifests "${ENV##*/}"

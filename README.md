@@ -42,7 +42,7 @@ helm install testerver helm/testserver
 Install ArgoCD server into it's own namespace.
 
 ```bash
-kubectl create namespace argocd 
+kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl port-forward svc/argocd-server -n argocd 9433:443
 ```
@@ -67,3 +67,8 @@ helm repo add netapp-trident https://netapp.github.io/trident-helm-chart
 
 helm install my-trident-operator netapp-trident/trident-operator --version 22.7.0
 ```
+
+TODO:
+ - update README
+ - generate README for the charts and subcharts
+ - clean up structure and values
