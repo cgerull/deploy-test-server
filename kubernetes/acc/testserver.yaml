@@ -81,12 +81,10 @@ spec:
       serviceAccountName: release-name-testserver
       securityContext:
         {}
-
       containers:
         - name: testserver
           securityContext:
-            runAsNonRoot: true
-            runAsUser: 1001
+            {}
           image: "cgerull/testserver:0.9.13"
           imagePullPolicy: IfNotPresent
 
