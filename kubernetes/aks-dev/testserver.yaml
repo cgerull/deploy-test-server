@@ -65,7 +65,7 @@ spec:
         - name: testserver
           securityContext:
             runAsNonRoot: true
-            runAsUser: 1000
+            runAsUser: 1001
           image: "cgerull/testserver:0.9.8"
           imagePullPolicy: IfNotPresent
 
