@@ -128,30 +128,30 @@ spec:
           emptyDir: {}
         - name: instance
           emptyDir: {}
----
-# Source: testserver/templates/ingress.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name:  testserver-testserver
-  labels:
-    helm.sh/chart: testserver-1.0.6
-    app.kubernetes.io/name: testserver
-    app.kubernetes.io/instance:  testserver
-    app.kubernetes.io/version: "1.0.6"
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: "testserver.dev.gerull.nl"
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name:  testserver-testserver
-                port:
-                  number: 80
+# ---
+# # Source: testserver/templates/ingress.yaml
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name:  testserver-testserver
+#   labels:
+#     helm.sh/chart: testserver-1.0.6
+#     app.kubernetes.io/name: testserver
+#     app.kubernetes.io/instance:  testserver
+#     app.kubernetes.io/version: "1.0.6"
+#     app.kubernetes.io/managed-by: Helm
+#   annotations:
+#     traefik.ingress.kubernetes.io/router.middlewares: testserver-testserver-stripprefix@kubernetescrd
+# spec:
+#   ingressClassName: traefik
+#   rules:
+#     - host: "testserver.dev.gerull.nl"
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name:  testserver-testserver
+#                 port:
+#                   number: 80
