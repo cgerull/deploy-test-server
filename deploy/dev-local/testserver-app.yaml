@@ -13,7 +13,7 @@ spec:
     - CreateNamespace=true
   sources:
     - repoURL: https://github.com/cgerull/deploy-test-server
-      chart: charts/testapp/charts/testserver
+      path: charts/testserver
       targetRevision: main
       helm:
         valueFiles:
