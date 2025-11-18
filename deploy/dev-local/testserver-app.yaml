@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: testserver-minikube
+  namespace: argocd
+spec:
+  destination:
+    namespace: testserver
+    server: https://kubernetes.default.svc
+  project: default
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+  sources:
+    - repoURL: https://github.com/cgerull/deploy-test-server
+      chart: charts/testapp/charts/testserver
+      targetRevision: main
+      helm:
+        valueFiles:
+        - $values/deploy/dev-local/testserver.yaml
+    - repoURL: https://github.com/cgerull/deploy-test-server
+      targetRevision: main
+      ref: values

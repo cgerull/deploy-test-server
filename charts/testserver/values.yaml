@@ -1,0 +1,167 @@
+# -- Default values for testserver.
+replicaCount: 1
+
+image:
+  repository: cgerull/testserver
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Extra labels
+labels:
+  app.kubernetes.io/app: testsuite
+
+# -- Configure (cluster-)roles for granulated permissions.
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- Should be set to least privileges.
+containerSecurityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # seccompProfile:
+  #     type: RuntimeDefault
+  # allowPrivilegeEscalation: false
+  # runAsNonRoot: true
+  # runAsUser: 1001
+
+# -- Horizontal scaling settings.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Upgrade strategy
+# upgradeStrategy:
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxUnavailable: 1
+
+# -- # Replicaset history to keep, default = 10
+revisionHistoryLimit: 2
+# revisionHistoryLimit: 2
+
+# -- Expose standard Http port
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ports:
+  - name: http
+    containerPort: 8080
+    protocol: TCP
+
+# -- Set to fit target environment
+ingress:
+  enabled: false
+  traefikStripPrefix: ''
+  tls: []
+
+# -- Basic application settings, see test-server README for full details.
+env:
+  - name: SECRET_KEY
+    value: HelmChartSecret
+    # valueFrom:
+    #   secretKeyRef:
+    #     name: testserver
+    #     key: SECRET_KEY
+  - name: REDIS_SERVER
+    value: None
+  # - name: REDIS_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: redisserver
+  #       key: REDIS_PASSWORD
+
+genericSecrets:
+  enabled: false
+  secrets:
+    - name: testserver
+      key: SECRET_KEY
+      value: GenericChartSecret
+    - name: redisserver
+      key: REDIS_PASSWORD
+      value: cEPguKSbSp
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+
+# readinessProbe:
+#   httpGet:
+#     path: /health
+#     port: http
+
+# -- Minimun values, increase in downstream configs.
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 20m
+    memory: 72Mi
+
+persistence:
+  enabled: false
+  snapshots: false
+  volumes:
+    - name: testserver-data
+      mountPath: /data
+      claimName: testserver-data
+      storageClass: ""
+      size: 1Gi
+      accessMode: ReadWriteMany
+
+tmpfs:
+  enabled: true
+  volumes:
+    - name: tmp
+      mountPath: /tmp
+      # If kubernetes support it you run tmpfs in memory
+      # emptyDir:
+      #   medium: memory
+    - name: instance
+      mountPath: /home/web/instance
+
+localSecrets:
+  enabled: false
+  secrets:
+    - name: testsecret
+      mountPath: /run/secret/my-secret
+      secretName: my_secret
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+database:
+  enabled: false
+
+tests:
+  enabled: false
+
+jobs:
+  enabled: true

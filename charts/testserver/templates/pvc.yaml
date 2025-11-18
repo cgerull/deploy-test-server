@@ -1,0 +1,21 @@
+{{- if .Values.persistence.enabled }}
+{{- $labels :=  include "testserver.labels" . -}}
+{{- range .Values.persistence.volumes }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  annotations:
+    "helm.sh/resource-policy": keep
+  name: "{{ .claimName }}"
+  labels:
+    {{- $labels | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .size | quote }}
+  storageClassName: "{{ .storageClass }}"
+---
+{{- end }}
+{{- end -}}
