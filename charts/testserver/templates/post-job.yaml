@@ -10,7 +10,6 @@ metadata:
 spec:
   # Job cleanup policy will cause ArgoCD to go out of sync. Keep the job for now until a solution is found.
   # ttlSecondsAfterFinished: 600
-  backoffLimit: 3
   template:
     metadata:
       labels:
@@ -20,7 +19,7 @@ spec:
       ttlSecondsAfterFinished: 600
       backoffLimit: 0
       containers:
-        - name: simplecho
+        - name: busybox
           image: busybox
           command:
             - /bin/sh
