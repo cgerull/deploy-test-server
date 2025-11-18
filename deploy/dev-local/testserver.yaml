@@ -31,8 +31,6 @@ service:
   port: 80
 
 env:
-  - name: SECRET_KEY
-    value: DevHelmChartSecret
   - name: ENV
     value: "dev-local"
 
@@ -41,7 +39,7 @@ env:
 #     name: testsecret
 
 ingress:
-  enabled: true
+  enabled: false
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
@@ -67,7 +65,7 @@ persistence:
       accessMode: ReadWriteMany
 
 localSecrets:
-  enabled: true
+  enabled: false
   secrets:
     - name: testsecret
       secretName: testserver
