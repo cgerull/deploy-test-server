@@ -1,0 +1,31 @@
+{{- if not .Values.jobs.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: test-post-sync-hook
+  annotations:
+    # Run this job after the application has been deployed with Helm
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  # Job cleanup policy will cause ArgoCD to go out of sync. Keep the job for now until a solution is found.
+  # ttlSecondsAfterFinished: 600
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: testserver
+    spec:
+      restartPolicy: Never
+      ttlSecondsAfterFinished: 600
+      backoffLimit: 0
+      containers:
+        - name: echoJob
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              echo "Post sync job executed successfully."
+{{- end }}
