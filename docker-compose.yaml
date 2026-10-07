@@ -30,7 +30,7 @@ services:
           syslog-address: "tcp://127.0.0.1:1514"
           tag: test-suite-redis
   minio:
-    image: 'bitnami/minio:latest'
+    image: 'soldevelo/minio:latest'
     ports:
       - '9000:9000'
       - '9001:9001'
